@@ -4,6 +4,9 @@ using UnityEngine.InputSystem;
 public class Player : MonoBehaviour
 {
     public float speed = 1;
+    public Map map;
+
+    
     public void OnMoveUp(InputValue value)
     {
         transform.position += Vector3.up * speed;
