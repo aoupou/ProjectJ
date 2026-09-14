@@ -496,6 +496,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
   map: {fileID: 241752802}
+  objPrefab: {fileID: 621276158797458000, guid: c295747a2052ec54c9b4f149dd25ff19, type: 3}
   PlayerSize: 0.8
 --- !u!114 &838436032
 MonoBehaviour:
