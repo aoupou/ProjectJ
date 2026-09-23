@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 
 public class Start_Buttom : MonoBehaviour
 {
-    public LayerMask buttonLayer;
+    [SerializeField] private LayerMask buttonLayer;
 
     private Camera mainCamera;
 
@@ -25,7 +25,7 @@ public class Start_Buttom : MonoBehaviour
 
     public void StartGame() // 씬을 이동시키는 코드
     {
-        SceneManager.LoadScene("SampleScene"); 
+        SceneManager.LoadScene("stage_choice");
     }
 
     bool MposSensor()
