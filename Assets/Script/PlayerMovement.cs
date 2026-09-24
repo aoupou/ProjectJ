@@ -55,7 +55,47 @@ public class Player : MonoBehaviour
             1
         );
     }
+    public void MoveUp()
+    {
+        if (isMoving)
+            return;
 
+        StartCoroutine(Move(
+            Vector3.up * map.TileHeightSize
+        ));
+    }
+    public void MoveDown()
+    {
+        if (isMoving)
+            return;
+
+        StartCoroutine(Move(
+            Vector3.down * map.TileHeightSize
+        ));
+    }
+    public void MoveLeft()
+    {
+        if (isMoving)
+            return;
+
+        spriteRenderer.flipX = true;
+
+        StartCoroutine(Move(
+            Vector3.left * map.TileWidthSize
+        ));
+    }
+    public void MoveRight()
+    {
+        if (isMoving)
+            return;
+
+        spriteRenderer.flipX = false;
+
+        StartCoroutine(Move(
+            Vector3.right * map.TileWidthSize
+        ));
+    }
+    /*
     public void OnMoveUp(InputValue value)
     {
         if (isMoving)
@@ -99,6 +139,7 @@ public class Player : MonoBehaviour
             Vector3.right * map.TileWidthSize
         ));
     }
+    */
 
     private IEnumerator Move(Vector3 movement)
     {
