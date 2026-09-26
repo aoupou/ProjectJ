@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3ccd1e7207b3854487830390306ea00, type: 3}
+  m_Name: Testitem2
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  id: 4884ba67e1da455408cdfdbbc87015d7
+  itemName: "\uB0A0\uAC1C \uC6B4\uB3D9\uD654"
+  icon: {fileID: 353710343217040640, guid: 8c6b2204500a6f445850be8b25a14df2, type: 3}
+  concept: "\uC0C9\uC5F0\uD544\uB85C \uB0A0\uAC1C\uB97C \uADF8\uB824 \uB123\uC740
+    \uC6B4\uB3D9\uD654. \uD55C \uCE78 \uB354 \uBA40\uB9AC \uB6F8 \uC218 \uC788\uC744
+    \uAC83 \uAC19\uB2E4."
+  effectText: "\uC774\uBC88 \uD134 \uC774\uB3D9 \uAC00\uB2A5 \uCE78 +1"
+  price: 50
+  unlockedAtStart: 1
+  effectType: 1
+  value: 1

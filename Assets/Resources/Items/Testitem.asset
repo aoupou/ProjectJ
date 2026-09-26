@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3ccd1e7207b3854487830390306ea00, type: 3}
+  m_Name: Testitem
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  id: 36fe655bc9229d3429f0a1a93d5ede6c
+  itemName: "\ube68\uac04 \ubc18\ucc3d\uace0"
+  icon: {fileID: 7016664691943578031, guid: f6e0df6851de26b4bbad05bb77fd267a, type: 3}
+  concept: "\uacf5\ucc45 \uad6c\uc11d\uc5d0 \ube68\uac04 \ud39c\uc73c\ub85c \uadf8\ub9b0 \ubc18\ucc3d\uace0. \ubd99\uc774\uba74 \uc870\uae08 \ub35c \uc544\ud504\ub2e4."
+  effectText: "HP +2 (\ud558\ud2b8 1\uce78 \ud68c\ubcf5)"
+  price: 30
+  unlockedAtStart: 1
+  effectType: 0
+  value: 2

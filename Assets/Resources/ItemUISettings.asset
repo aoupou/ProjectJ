@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b41e4bd9e80f0849848a693f018b24b, type: 3}
+  m_Name: ItemUISettings
+  m_EditorClassIdentifier: Assembly-CSharp::ItemUISettings
+  shopIconPosition: {x: 0, y: 31}
+  shopIconSize: {x: 120, y: 120}
+  shopName:
+    position: {x: 0, y: -100}
+    size: {x: 250, y: 28}
+    fontSize: 24
+    color: {r: 0.1, g: 0.1, b: 0.1, a: 1}
+    characterSpacing: 0
+    fontStyle: 1
+    alignment: 514
+  shopPrice:
+    position: {x: 0, y: -124}
+    size: {x: 250, y: 26}
+    fontSize: 22
+    color: {r: 0.1, g: 0.1, b: 0.1, a: 1}
+    characterSpacing: 0
+    fontStyle: 0
+    alignment: 514
+  priceFormat: '{0} G'
