@@ -44,9 +44,11 @@ public static class ItemEffects
         {
             case ItemEffectType.HealHP:
                 {
-                    Player_HP hp = UnityEngine.Object.FindAnyObjectByType<Player_HP>();
+                    // character_HP는 플레이어와 적 둘 다 붙어 있으므로 반드시 플레이어 것을 찾음
+                    Player player = UnityEngine.Object.FindAnyObjectByType<Player>();
+                    character_HP hp = player != null ? player.GetComponent<character_HP>() : null;
 
-                    // Player_HP에 회복 함수가 없어서 음수 데미지로 회복 (Heal()이 생기면 교체)
+                    // character_HP에 회복 함수가 없어서 음수 데미지로 회복 (Heal()이 생기면 교체)
                     if (hp != null)
                         hp.TakeDamage(-item.value);
 

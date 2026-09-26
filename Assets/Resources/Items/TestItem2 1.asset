@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: TestItem2 1
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   id: bc99a3dab1fcb8e4b934d9e5d30f3f92
-  itemName: 
+  itemName: "\uD14C\uC2A4\uD2B8\uC6A9"
   icon: {fileID: 0}
-  concept: 
-  effectText: 
-  price: 0
+  concept: "\uD14C\uC2A4\uD2B8 \uB0B4\uC6A9\uC785\uB2C8\uB2E4"
+  effectText: "\uD6A8\uACFC \uB0B4\uC6A9\uC785\uB2C8\uB2E4."
+  price: 50
   unlockedAtStart: 1
-  effectType: 0
-  value: 0
+  effectType: 1
+  value: 50

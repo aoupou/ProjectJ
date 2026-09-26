@@ -2,7 +2,7 @@ using UnityEngine;
 
 public enum ItemEffectType
 {
-    HealHP,      // HP 회복 (value = 회복량, Player_HP와 같은 단위: 1 = 반 칸)
+    HealHP,      // HP 회복 (value = 회복량, character_HP와 같은 단위: 1 = 반 칸)
     MoveRangeUp, // 이동 가능 칸 수 증가 (value = 추가 칸 수, 이번 턴만)
 }
 

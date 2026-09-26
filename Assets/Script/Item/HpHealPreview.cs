@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 // HP 회복 아이템을 선택하면 회복될 하트를 기존 하트 오른쪽에 깜빡이며 보여준다 (기획서 10-2-2)
-// Player_HP가 매 프레임 자기 하트를 다시 만들기 때문에 Heart_Parent 안에는 못 넣고, 옆에 따로 만든다
+// character_HP가 하트를 다시 만들 때 Heart_Parent의 자식을 전부 지우므로, 그 안에는 못 넣고 옆에 따로 만든다
 public class HpHealPreview : MonoBehaviour
 {
     private const float BlinkInterval = 0.3f;
