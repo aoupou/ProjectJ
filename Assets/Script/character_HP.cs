@@ -1,9 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Player_HP : MonoBehaviour
+public class character_HP : MonoBehaviour
 {
     [SerializeField] private int currentHP = 10;
+    public int CurrentHP => currentHP;
 
     [SerializeField] private GameObject heartPrefab;
 
@@ -12,7 +13,7 @@ public class Player_HP : MonoBehaviour
 
     [SerializeField] private Transform heartParent;
 
-    void Update() // 테스트만 업데이트 나중에는 스타트로 바꿀 것
+    void Start() // 테스트만 업데이트 나중에는 스타트로 바꿀 것
     {
         UpdateHearts();
     }

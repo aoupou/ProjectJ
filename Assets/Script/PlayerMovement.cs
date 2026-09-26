@@ -1,17 +1,21 @@
-using UnityEngine;
-using UnityEngine.InputSystem;
 using System;
 using System.Collections;
+using System.Net.Sockets;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using static Battle;
 
 public class Player : MonoBehaviour
 {
+    public Battle battle;
     public Map map;
 
     public float PlayerSize;
 
     [SerializeField] private float moveDuration = 1f;
 
-    public static event Action turn;
+    public static event Action movingOut;
+    public static event Action moveSellecting;
 
     private SpriteAnimator animator;
     private SpriteRenderer spriteRenderer;
@@ -95,29 +99,42 @@ public class Player : MonoBehaviour
             Vector3.right * map.TileWidthSize
         ));
     }
-    /*
-    public void OnMoveUp(InputValue value)
+
+    public void OnMoveUp(InputValue value) // 이거 공격으로도 쓸 수 있을 듯 싶긴한데 나중에 차차 생각해보기
     {
+        if (battle.Step != Battle_Step.SelectDirection)
+            return;
+
         if (isMoving)
             return;
 
         StartCoroutine(Move(
             Vector3.up * map.TileHeightSize
         ));
+        
+        MoveSellecting();
     }
 
     public void OnMoveDown(InputValue value)
     {
+        if (battle.Step != Battle_Step.SelectDirection)
+            return;
+
         if (isMoving)
             return;
 
         StartCoroutine(Move(
             Vector3.down * map.TileHeightSize
         ));
+        
+        MoveSellecting();
     }
 
-    public void OnMoveLeft(InputValue value)
+    public void OnMoveLeft(InputValue value) 
     {
+        if (battle.Step != Battle_Step.SelectDirection)
+            return;
+
         if (isMoving)
             return;
 
@@ -126,10 +143,15 @@ public class Player : MonoBehaviour
         StartCoroutine(Move(
             Vector3.left * map.TileWidthSize
         ));
+        
+        MoveSellecting();
     }
 
     public void OnMoveRight(InputValue value)
     {
+        if (battle.Step != Battle_Step.SelectDirection)
+            return;
+
         if (isMoving)
             return;
 
@@ -138,8 +160,10 @@ public class Player : MonoBehaviour
         StartCoroutine(Move(
             Vector3.right * map.TileWidthSize
         ));
+        
+        MoveSellecting();
     }
-    */
+
 
     private IEnumerator Move(Vector3 movement)
     {
@@ -178,11 +202,16 @@ public class Player : MonoBehaviour
         isMoving = false;
 
         // 이동이 끝났으므로 턴
-        Turn();
+        MovingOut();
     }
 
-    public void Turn()
+    public void MovingOut()
     {
-        turn?.Invoke();
+        movingOut?.Invoke();
+    }
+
+    public void MoveSellecting()
+    {
+        moveSellecting?.Invoke();
     }
 }
