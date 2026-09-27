@@ -27,8 +27,22 @@ public class SpriteAnimationExtractor : EditorWindow
     private int cellWidth = 32;
     private int cellHeight = 32;
     private bool skipEmptyCells = true;
+    // 기준 시트(예: 걷기)의 캐릭터와 같은 크기가 되도록 PPU / pivot 자동 설정
+    private bool matchReference;
+    private Texture2D referenceSheet;
+    private bool alignFeet = true;
+    private const string ReferencePrefKey = "SpriteAnimationExtractor.Reference";
+    private const byte AlphaThreshold = 8; // 이 값 이하 알파는 빈 픽셀로 취급 (크기 측정용)
 
-    private void OnEnable() => EditorApplication.update += Repaint;
+    private void OnEnable()
+    {
+        EditorApplication.update += Repaint;
+        matchReference = EditorPrefs.GetBool(ReferencePrefKey + ".On", false);
+        alignFeet = EditorPrefs.GetBool(ReferencePrefKey + ".Feet", true);
+        string refPath = EditorPrefs.GetString(ReferencePrefKey, "");
+        if (!string.IsNullOrEmpty(refPath)) referenceSheet = AssetDatabase.LoadAssetAtPath<Texture2D>(refPath);
+    }
+
     private void OnDisable()
     {
         EditorApplication.update -= Repaint;
@@ -107,10 +121,34 @@ public class SpriteAnimationExtractor : EditorWindow
         cellHeight = Mathf.Max(1, EditorGUILayout.IntField("Cell Height (px)", cellHeight));
         skipEmptyCells = EditorGUILayout.Toggle("빈 칸 건너뛰기", skipEmptyCells);
 
+        EditorGUI.BeginChangeCheck();
+        matchReference = EditorGUILayout.Toggle("기준 시트에 크기 맞추기", matchReference);
+        if (matchReference)
+        {
+            EditorGUI.indentLevel++;
+            referenceSheet = (Texture2D)EditorGUILayout.ObjectField("기준 시트", referenceSheet, typeof(Texture2D), false);
+            alignFeet = EditorGUILayout.Toggle("발 위치 맞추기", alignFeet);
+            EditorGUI.indentLevel--;
+            if (referenceSheet == null)
+                EditorGUILayout.HelpBox("크기를 맞출 기준 시트(이미 슬라이스된 것, 예: 걷기)를 넣으세요.", MessageType.Info);
+        }
+        if (EditorGUI.EndChangeCheck())
+        {
+            EditorPrefs.SetBool(ReferencePrefKey + ".On", matchReference);
+            EditorPrefs.SetBool(ReferencePrefKey + ".Feet", alignFeet);
+            EditorPrefs.SetString(ReferencePrefKey, referenceSheet != null ? AssetDatabase.GetAssetPath(referenceSheet) : "");
+        }
+
         using (new EditorGUI.DisabledScope(sheetPaths.Count == 0))
         {
             if (GUILayout.Button($"Grid 일괄 적용 ({sheetPaths.Count}개 시트)"))
                 ApplyGridSlice();
+            using (new EditorGUI.DisabledScope(!matchReference || referenceSheet == null))
+            {
+                // 이미 잘라둔 시트는 다시 자르지 않고(스프라이트 참조 유지) 크기만 맞춘다
+                if (GUILayout.Button($"크기만 맞추기 ({sheetPaths.Count}개 시트)"))
+                    ApplyFitOnly();
+            }
             if (GUILayout.Button($"애니메이션 에셋 제작 ({sheetPaths.Count}개 시트)"))
                 CreateAllAssets();
         }
@@ -146,7 +184,8 @@ public class SpriteAnimationExtractor : EditorWindow
                 return;
             }
 
-            Color32[] px = skipEmptyCells ? tex.GetPixels32() : null;
+            bool fit = matchReference && referenceSheet != null;
+            Color32[] px = skipEmptyCells || fit ? tex.GetPixels32() : null;
             string baseName = Path.GetFileNameWithoutExtension(path);
             var rects = new List<SpriteRect>();
             int index = 0;
@@ -156,7 +195,7 @@ public class SpriteAnimationExtractor : EditorWindow
                 {
                     int x = col * cellWidth;
                     int y = tex.height - (row + 1) * cellHeight; // 좌상단부터, Unity는 좌하단 원점
-                    if (px != null && IsEmpty(px, tex.width, x, y)) continue;
+                    if (skipEmptyCells && IsEmpty(px, tex.width, x, y)) continue;
                     rects.Add(new SpriteRect
                     {
                         name = $"{baseName}_{index++}",
@@ -167,6 +206,8 @@ public class SpriteAnimationExtractor : EditorWindow
                     });
                 }
             }
+
+            if (fit) FitToReference(path, importer, px, tex.width, rects);
 
             importer.textureType = TextureImporterType.Sprite;
             importer.spriteImportMode = SpriteImportMode.Multiple;
@@ -189,6 +230,163 @@ public class SpriteAnimationExtractor : EditorWindow
         {
             DestroyImmediate(tex);
         }
+    }
+
+    private void ApplyFitOnly()
+    {
+        foreach (string path in sheetPaths)
+        {
+            var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+            if (importer == null) continue;
+            Color32[] px = LoadPixels(path, out int texWidth, out _);
+            if (px == null) continue;
+
+            var provider = GetDataProvider(importer);
+            var rects = provider.GetSpriteRects().ToList();
+            if (rects.Count == 0)
+            {
+                Debug.LogWarning($"[SpriteAnimationExtractor] '{path}' 에 슬라이스된 스프라이트가 없습니다.");
+                continue;
+            }
+            if (!FitToReference(path, importer, px, texWidth, rects)) continue;
+            provider.SetSpriteRects(rects.ToArray());
+            provider.Apply();
+            importer.SaveAndReimport();
+        }
+        ClearPreviews();
+    }
+
+    // 기준 시트 캐릭터와 키가 같아지도록 PPU를, 발 높이가 같아지도록 pivot을 설정
+    // 모든 프레임의 캐릭터 영역을 합친 범위로 재서 프레임마다 크기가 튀지 않게 한다
+    private bool FitToReference(string path, TextureImporter importer, Color32[] px, int texWidth, List<SpriteRect> rects)
+    {
+        string refPath = AssetDatabase.GetAssetPath(referenceSheet);
+        if (refPath == path)
+        {
+            Debug.LogWarning($"[SpriteAnimationExtractor] '{path}' 는 기준 시트라서 크기 맞추기를 건너뜀");
+            return false;
+        }
+        if (!TryMeasureReference(refPath, out float refBottom, out float refTop))
+            return false;
+
+        int minY = int.MaxValue, maxY = int.MinValue;
+        foreach (SpriteRect r in rects)
+        {
+            if (!TryMeasure(px, texWidth, r.rect, out int lo, out int hi)) continue;
+            minY = Mathf.Min(minY, lo);
+            maxY = Mathf.Max(maxY, hi);
+        }
+        if (minY > maxY)
+        {
+            Debug.LogWarning($"[SpriteAnimationExtractor] '{path}' 에서 캐릭터 픽셀을 찾지 못함");
+            return false;
+        }
+
+        float ppu = (maxY - minY + 1) / (refTop - refBottom);
+        importer.spritePixelsPerUnit = ppu;
+        if (alignFeet)
+        {
+            foreach (SpriteRect r in rects)
+            {
+                r.alignment = SpriteAlignment.Custom;
+                r.pivot = new Vector2(0.5f, (minY - refBottom * ppu) / r.rect.height);
+            }
+        }
+        Debug.Log($"[SpriteAnimationExtractor] {path}: '{Path.GetFileName(refPath)}' 기준으로 PPU {ppu:0.#}" +
+                  (alignFeet ? ", 발 위치 맞춤" : ""));
+        return true;
+    }
+
+    // 기준 시트 캐릭터의 아래/위 끝 (pivot 기준, 유닛 단위)
+    private static bool TryMeasureReference(string refPath, out float bottom, out float top)
+    {
+        bottom = float.MaxValue;
+        top = float.MinValue;
+        var importer = AssetImporter.GetAtPath(refPath) as TextureImporter;
+        Color32[] px = importer != null ? LoadPixels(refPath, out int texWidth, out _) : null;
+        if (px == null)
+        {
+            Debug.LogWarning($"[SpriteAnimationExtractor] 기준 시트를 읽을 수 없음: {refPath}");
+            return false;
+        }
+
+        float ppu = importer.spritePixelsPerUnit;
+        foreach (SpriteRect r in GetDataProvider(importer).GetSpriteRects())
+        {
+            if (!TryMeasure(px, texWidth, r.rect, out int lo, out int hi)) continue;
+            float pivotY = PivotY(r.alignment, r.pivot) * r.rect.height;
+            bottom = Mathf.Min(bottom, (lo - pivotY) / ppu);
+            top = Mathf.Max(top, (hi + 1 - pivotY) / ppu);
+        }
+        if (bottom >= top)
+        {
+            Debug.LogWarning($"[SpriteAnimationExtractor] 기준 시트 '{refPath}' 에 슬라이스된 스프라이트가 없습니다.");
+            return false;
+        }
+        return true;
+    }
+
+    // 칸 안에서 보이는 픽셀의 가장 아래/위 행 (칸 아래 기준)
+    private static bool TryMeasure(Color32[] px, int texWidth, Rect rect, out int lo, out int hi)
+    {
+        int x0 = Mathf.RoundToInt(rect.x), y0 = Mathf.RoundToInt(rect.y);
+        int w = Mathf.RoundToInt(rect.width), h = Mathf.RoundToInt(rect.height);
+        lo = int.MaxValue;
+        hi = int.MinValue;
+        for (int y = 0; y < h; y++)
+        {
+            int row = (y0 + y) * texWidth;
+            for (int x = x0; x < x0 + w; x++)
+            {
+                if (px[row + x].a <= AlphaThreshold) continue;
+                lo = Mathf.Min(lo, y);
+                hi = y;
+                break;
+            }
+        }
+        return lo <= hi;
+    }
+
+    private static float PivotY(SpriteAlignment alignment, Vector2 pivot)
+    {
+        switch (alignment)
+        {
+            case SpriteAlignment.TopLeft:
+            case SpriteAlignment.TopCenter:
+            case SpriteAlignment.TopRight: return 1f;
+            case SpriteAlignment.BottomLeft:
+            case SpriteAlignment.BottomCenter:
+            case SpriteAlignment.BottomRight: return 0f;
+            case SpriteAlignment.Custom: return pivot.y;
+            default: return 0.5f;
+        }
+    }
+
+    // 임포트 설정(maxSize 등)과 무관하게 원본 픽셀을 읽는다
+    private static Color32[] LoadPixels(string path, out int width, out int height)
+    {
+        var tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+        try
+        {
+            width = height = 0;
+            if (!ImageConversion.LoadImage(tex, File.ReadAllBytes(path))) return null;
+            width = tex.width;
+            height = tex.height;
+            return tex.GetPixels32();
+        }
+        finally
+        {
+            DestroyImmediate(tex);
+        }
+    }
+
+    private static ISpriteEditorDataProvider GetDataProvider(TextureImporter importer)
+    {
+        var factory = new SpriteDataProviderFactories();
+        factory.Init();
+        var provider = factory.GetSpriteEditorDataProviderFromObject(importer);
+        provider.InitSpriteEditorDataProvider();
+        return provider;
     }
 
     private bool IsEmpty(Color32[] px, int texWidth, int x0, int y0)

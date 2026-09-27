@@ -15,7 +15,7 @@ MonoBehaviour:
   defaultState: Idle
   entries:
   - state: idle
-    animation: {fileID: 11400000, guid: 1081b43a53bbe0d4588607be3e69d234, type: 2}
+    animation: {fileID: 11400000, guid: f971f8cc2cbaf5147a1330b8cc0382b2, type: 2}
   - state: Walking
     animation: {fileID: 11400000, guid: fa5e1cd0c4b717e4b87f6cf01ecc8afb, type: 2}
   combos: []
