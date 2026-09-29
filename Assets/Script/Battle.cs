@@ -28,6 +28,12 @@ public class Battle : MonoBehaviour
     private Battle_Step playerAction = Battle_Step.SelectAction;
     private Battle_Step enemyAction = Battle_Step.SelectAction;
 
+    // 구글 시트 스탯으로 플레이어 공격력 설정 (CharacterStatHook에서 호출)
+    public void SetAttackDamage(int damage)
+    {
+        attackDamage = damage;
+    }
+
     void Start()
     {
         playerScript = player.GetComponent<Player>();

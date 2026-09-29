@@ -68,7 +68,7 @@ public static class Inventory
 
     public static bool IsUnlocked(ItemData item)
     {
-        return item.unlockedAtStart || Data.unlocked.Contains(item.id);
+        return item.unlockStage == 0 || Data.unlocked.Contains(item.id);
     }
 
     public static ItemData GetEquipped(int slot)
@@ -173,6 +173,20 @@ public static class Inventory
         Data.unlocked.Add(item.id);
         Notify();
         return true;
+    }
+
+    // 스테이지 N 클리어 시 호출: unlockStage가 N인 아이템을 전부 해금. 새로 해금된 아이템 목록을 돌려줌 (보상 표시용)
+    public static List<ItemData> UnlockStageRewards(int stage)
+    {
+        List<ItemData> unlocked = new List<ItemData>();
+
+        foreach (ItemData item in ItemDatabase.All)
+        {
+            if (item.unlockStage == stage && Unlock(item))
+                unlocked.Add(item);
+        }
+
+        return unlocked;
     }
 
     public static void CommitStage()

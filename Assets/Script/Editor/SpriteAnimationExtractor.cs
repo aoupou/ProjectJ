@@ -303,7 +303,8 @@ public class SpriteAnimationExtractor : EditorWindow
         bottom = float.MaxValue;
         top = float.MinValue;
         var importer = AssetImporter.GetAtPath(refPath) as TextureImporter;
-        Color32[] px = importer != null ? LoadPixels(refPath, out int texWidth, out _) : null;
+        int texWidth = 0;
+        Color32[] px = importer != null ? LoadPixels(refPath, out texWidth, out _) : null;
         if (px == null)
         {
             Debug.LogWarning($"[SpriteAnimationExtractor] 기준 시트를 읽을 수 없음: {refPath}");

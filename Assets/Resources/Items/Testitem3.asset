@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a3ccd1e7207b3854487830390306ea00, type: 3}
-  m_Name: TestTestItem
+  m_Name: Testitem3
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  id: 6a50ea0fe9a761d4680c17c52f999922
-  itemName: "\uC9C4\uC9DC \uD14C\uC2A4\uD2B8 \uC544\uC774\uD15C"
+  id: d871f36ee0d1f0d45a0d56e69a9db641
+  itemName: "\uC544\uC789"
   icon: {fileID: 0}
-  concept: "\uD14C\uC2A4\uD2B8 \uC544\uC774\uD15C\uB0B4\uC6A9\uC785\uB2C8\uB2E4"
-  effectText: "\uCCB4\uB825 +2"
-  price: 50
-  unlockStage: 2
+  concept: "\uC6B0\uC6C5"
+  effectText: "\uC800\uC6C5"
+  price: 40
+  unlockStage: 0
   effectType: 0
-  value: 2
+  value: 3

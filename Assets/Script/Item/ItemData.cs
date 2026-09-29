@@ -2,8 +2,9 @@ using UnityEngine;
 
 public enum ItemEffectType
 {
-    HealHP,      // HP 회복 (value = 회복량, character_HP와 같은 단위: 1 = 반 칸)
-    MoveRangeUp, // 이동 가능 칸 수 증가 (value = 추가 칸 수, 이번 턴만)
+    // InspectorName = Inspector와 구글 시트 드롭다운에 보이는 이름 (시트는 영문 이름도 인식)
+    [InspectorName("HP 회복")] HealHP,          // HP 회복 (value = 회복량, character_HP와 같은 단위: 1 = 반 칸)
+    [InspectorName("이동 칸 증가")] MoveRangeUp, // 이동 가능 칸 수 증가 (value = 추가 칸 수, 이번 턴만)
 }
 
 // 아이템 하나의 정보. Assets/Resources/Items 폴더에 만들어두면 자동으로 불러온다
@@ -20,7 +21,8 @@ public class ItemData : ScriptableObject
     [TextArea] public string concept;    // 상점 상세 정보의 콘셉트 설명
     [TextArea] public string effectText; // 툴팁 / 상세 정보의 효과 설명
     public int price;
-    public bool unlockedAtStart = true;  // false면 스테이지 클리어 보상으로 해금해야 상점에 나옴
+    // 상점에 나오는 조건. 0 = 처음부터, N = 스테이지 N 클리어 보상으로 해금 (Inventory.UnlockStageRewards)
+    [Min(0)] public int unlockStage;
 
     public ItemEffectType effectType;
     public int value;

@@ -59,6 +59,13 @@ public class character_HP : MonoBehaviour
         }
     }
 
+    // 구글 시트 스탯으로 시작 HP 설정 (CharacterStatHook에서 호출)
+    public void SetHP(int hp)
+    {
+        currentHP = hp;
+        UpdateHearts();
+    }
+
     public void TakeDamage(int damage)
     {
         currentHP -= damage;
