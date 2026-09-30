@@ -36,12 +36,12 @@ public class Player : MonoBehaviour
         int randomy = UnityEngine.Random.Range(0, map.Height);
 
         float playerx =
-            (map.MapSize / 2 * -1)
+            map.MapStartX
             + (map.TileWidthSize / 2)
             + (map.TileWidthSize * randomx);
 
         float playery =
-            (map.MapSize / 2 * -1)
+            map.MapStartY
             + (map.TileHeightSize / 2)
             + (map.TileHeightSize * randomy);
 

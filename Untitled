@@ -1,0 +1,4 @@
+                Tile.transform.position = new Vector3(
+                    (MapSize.transform.position.x / 2 * -1)
+                    + (TileWidthSize / 2)
+                    + (TileWidthSize * x),

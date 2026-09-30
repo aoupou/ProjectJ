@@ -4,17 +4,22 @@ public class Map : MonoBehaviour
 {
     public int Width = 5;
     public int Height = 5;
-    public float MapSize = 20;
+    public GameObject MapSize;
 
     public float TileWidthSize;
     public float TileHeightSize;
+
+    public float MapStartX = 0;
+    public float MapStartY = 0;
 
     public GameObject TilePrefab;
 
     private void Awake()
     {
-        TileWidthSize = MapSize / Width;
-        TileHeightSize = MapSize / Height;
+        TileWidthSize = MapSize.transform.localScale.x / Width;
+        TileHeightSize = MapSize.transform.localScale.y/ Height;
+        MapStartX = MapSize.transform.position.x- MapSize.transform.localScale.x / 2;
+        MapStartY = MapSize.transform.position.y- MapSize.transform.localScale.y / 2;
     }
 
     void Start()
@@ -32,11 +37,11 @@ public class Map : MonoBehaviour
                 );
 
                 Tile.transform.position = new Vector3(
-                    (MapSize / 2 * -1)
+                    MapStartX
                     + (TileWidthSize / 2)
                     + (TileWidthSize * x),
 
-                    (-MapSize / 2)
+                    MapStartY
                     + (TileHeightSize / 2)
                     + (TileHeightSize * y),
 
