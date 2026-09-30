@@ -12,13 +12,16 @@ public class Player : MonoBehaviour
 
     public float PlayerSize;
 
-    [SerializeField] private float moveDuration = 1f;
+    [SerializeField] private AudioClip moveInSound;  // 마법진으로 들어갈 때
+    [SerializeField] private AudioClip moveOutSound; // 마법진에서 나올 때
+    [SerializeField, Range(0f, 1f)] private float moveVolume = 1f;
 
     public static event Action movingOut;
     public static event Action moveSellecting;
 
     private SpriteAnimator animator;
     private SpriteRenderer spriteRenderer;
+    private AudioSource audioSource;
 
     private bool isMoving;
 
@@ -26,6 +29,12 @@ public class Player : MonoBehaviour
     {
         animator = GetComponent<SpriteAnimator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+        // 씬에 AudioSource가 없어도 동작하도록 없으면 추가
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false;
     }
 
     private void Start()
@@ -169,32 +178,18 @@ public class Player : MonoBehaviour
     {
         isMoving = true;
 
-        Vector3 startPosition = transform.position;
-        Vector3 targetPosition = startPosition + movement;
+        Vector3 targetPosition = transform.position + movement;
 
-        // 이동 시작 → Walking
-        animator.SetState("Walking", true);
+        // 마법진 속으로 들어감
+        PlaySound(moveInSound);
+        yield return PlayOnce("WalkingOn");
 
-        float elapsedTime = 0f;
-
-        while (elapsedTime < moveDuration)
-        {
-            elapsedTime += Time.deltaTime;
-
-            float progress =
-                elapsedTime / moveDuration;
-
-            transform.position = Vector3.Lerp(
-                startPosition,
-                targetPosition,
-                progress
-            );
-
-            yield return null;
-        }
-
-        // 정확히 목표 위치에 맞추기
+        // 이동할 칸으로 순간이동
         transform.position = targetPosition;
+
+        // 마법진 속에서 나옴
+        PlaySound(moveOutSound);
+        yield return PlayOnce("WalkingOff");
 
         // 이동 완료 → Idle
         animator.SetState("Idle", true);
@@ -203,6 +198,34 @@ public class Player : MonoBehaviour
 
         // 이동이 끝났으므로 턴
         MovingOut();
+    }
+
+    // 효과음 재생 (Inspector에 안 넣었으면 아무것도 안 함)
+    private void PlaySound(AudioClip clip)
+    {
+        if (clip == null)
+            return;
+
+        audioSource.PlayOneShot(clip, moveVolume);
+    }
+
+    // 애니메이션을 한 번 재생하고 끝날 때까지 기다림
+    private IEnumerator PlayOnce(string state)
+    {
+        animator.SetState(state, true);
+
+        // 컬렉션에 없는 상태면 기다리지 않음
+        if (animator.State != state)
+            yield break;
+
+        float elapsedTime = 0f;
+
+        // loop가 켜져 있어도 1회 재생 시간이 지나면 끝냄
+        while (!animator.IsFinished && elapsedTime < animator.Duration)
+        {
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
     }
 
     public void MovingOut()

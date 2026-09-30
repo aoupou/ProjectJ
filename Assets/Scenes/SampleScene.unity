@@ -728,8 +728,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5167b341eed03494f90c75fe980d72ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Map
-  Width: 4
-  Height: 4
+  Width: 5
+  Height: 5
   MapSize: {fileID: 762981254}
   TileWidthSize: 0
   TileHeightSize: 0
@@ -2706,7 +2706,9 @@ MonoBehaviour:
   battle: {fileID: 1731515873}
   map: {fileID: 241752802}
   PlayerSize: 1
-  moveDuration: 1
+  moveInSound: {fileID: 8300000, guid: 62e7bc5cbcdb2c8458c16b48ca11bfba, type: 3}
+  moveOutSound: {fileID: 8300000, guid: cfb31dab32045a14eb5f60f39fdb7218, type: 3}
+  moveVolume: 1
 --- !u!114 &838436035
 MonoBehaviour:
   m_ObjectHideFlags: 0
