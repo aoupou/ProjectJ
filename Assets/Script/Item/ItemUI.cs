@@ -24,7 +24,7 @@ public static class ItemUI
         whiteSprite = null;
     }
 
-    // 게임 전체 폰트(개구)를 그대로 사용 (GameFont.cs)
+    // 게임 전체 폰트(교보 손글씨)를 그대로 사용 (GameFont.cs)
     public static TMP_FontAsset Font => GameFont.Font;
 
     // 1x1 크기의 흰색 스프라이트 (칸 덮기용)

@@ -2,9 +2,9 @@ using TMPro;
 using UnityEditor;
 using UnityEngine;
 
-// 게임 전체 폰트(개구) 설정
-//  1. Resources/Fonts/Gaegu-Regular.ttf 로 TMP 폰트 에셋(Gaegu-Regular SDF)을 만든다
-//  2. TMP 기본 폰트로 지정한다 (앞으로 새로 만드는 글자에도 개구가 적용됨)
+// 게임 전체 폰트(교보 손글씨 2025) 설정
+//  1. Resources/Fonts/KyoboHandwriting2025lyb.ttf 로 TMP 폰트 에셋(KyoboHandwriting2025lyb SDF)을 만든다
+//  2. TMP 기본 폰트로 지정한다 (앞으로 새로 만드는 글자에도 이 폰트가 적용됨)
 // 에디터가 열릴 때 한 번 자동으로 실행되고, 메뉴 ProjectJ → 게임 폰트 다시 설정 으로도 실행 가능
 public static class GameFontSetup
 {
@@ -48,7 +48,7 @@ public static class GameFontSetup
 
             if (fontAsset == null)
             {
-                Debug.LogWarning("[폰트] 개구 TMP 폰트 에셋을 만들지 못함. Gaegu-Regular.ttf 우클릭 → Create → TextMeshPro → Font Asset → SDF 로 직접 만들어 주세요");
+                Debug.LogWarning("[폰트] TMP 폰트 에셋을 만들지 못함. KyoboHandwriting2025lyb.ttf 우클릭 → Create → TextMeshPro → Font Asset → SDF 로 직접 만들어 주세요");
                 return;
             }
         }
@@ -60,6 +60,6 @@ public static class GameFontSetup
         EditorUtility.SetDirty(TMP_Settings.instance);
         AssetDatabase.SaveAssets();
 
-        Debug.Log("[폰트] TMP 기본 폰트를 개구(Gaegu)로 설정함");
+        Debug.Log("[폰트] TMP 기본 폰트를 교보 손글씨 2025로 설정함");
     }
 }

@@ -14,12 +14,24 @@ public class Map : MonoBehaviour
 
     public GameObject TilePrefab;
 
+    // 체스판 무늬 색 (한 칸 건너 연하게 칠함). 범위 표시를 끌 때도 이 색으로 돌려놓기
+    public Color CheckerColor = new Color(0.25f, 0.25f, 0.3f, 0.07f);
+
+    // 게임판 바깥 테두리 (안쪽 선보다 굵고 진하게)
+    public Color FrameColor = new Color(0.2f, 0.2f, 0.25f, 0.9f);
+    public float FrameThickness = 0.08f;
+
     private void Awake()
     {
         TileWidthSize = MapSize.transform.localScale.x / Width;
         TileHeightSize = MapSize.transform.localScale.y/ Height;
         MapStartX = MapSize.transform.position.x- MapSize.transform.localScale.x / 2;
         MapStartY = MapSize.transform.position.y- MapSize.transform.localScale.y / 2;
+
+        // 스포너는 에디터에서 범위 잡는 용도라 게임 시작하면 안 보이게 (위치·크기 값은 그대로 씀)
+        SpriteRenderer spawnerRenderer = MapSize.GetComponent<SpriteRenderer>();
+        if (spawnerRenderer != null)
+            spawnerRenderer.enabled = false;
     }
 
     void Start()
@@ -47,7 +59,44 @@ public class Map : MonoBehaviour
 
                     1
                 );
+
+                // Fill = 칸 안쪽 색 층 (Tile 프리팹 자식). 범위 표시도 여기 색을 바꿔서 함
+                Tile.transform.Find("Fill").GetComponent<SpriteRenderer>().color =
+                    (x + y) % 2 == 0 ? CheckerColor : Color.clear;
             }
         }
+
+        CreateFrame();
+    }
+
+    // 게임판 바깥에 굵은 선 4개(위·아래·왼쪽·오른쪽)를 그림
+    // 타일의 Fill(흰 사각형) 그림을 가져다가 길쭉하게 늘려서 씀
+    void CreateFrame()
+    {
+        SpriteRenderer fill = TilePrefab.transform.Find("Fill").GetComponent<SpriteRenderer>();
+
+        float width = MapSize.transform.localScale.x;
+        float height = MapSize.transform.localScale.y;
+        float centerX = MapStartX + width / 2;
+        float centerY = MapStartY + height / 2;
+
+        // 가로 선은 두께만큼 더 길게 해서 모서리가 비지 않게
+        CreateFrameLine(fill, new Vector2(centerX, MapStartY), new Vector2(width + FrameThickness, FrameThickness));          // 아래
+        CreateFrameLine(fill, new Vector2(centerX, MapStartY + height), new Vector2(width + FrameThickness, FrameThickness)); // 위
+        CreateFrameLine(fill, new Vector2(MapStartX, centerY), new Vector2(FrameThickness, height));                        // 왼쪽
+        CreateFrameLine(fill, new Vector2(MapStartX + width, centerY), new Vector2(FrameThickness, height));                // 오른쪽
+    }
+
+    void CreateFrameLine(SpriteRenderer fill, Vector2 position, Vector2 size)
+    {
+        GameObject line = new GameObject("BoardFrame");
+        line.transform.position = new Vector3(position.x, position.y, 1);
+        line.transform.localScale = new Vector3(size.x, size.y, 1);
+
+        SpriteRenderer renderer = line.AddComponent<SpriteRenderer>();
+        renderer.sprite = fill.sprite;
+        renderer.sharedMaterial = fill.sharedMaterial;
+        renderer.color = FrameColor;
+        renderer.sortingOrder = 2; // 타일 선(1)보다 위
     }
 }
