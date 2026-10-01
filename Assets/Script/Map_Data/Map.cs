@@ -2,9 +2,11 @@ using UnityEngine;
 
 public class Map : MonoBehaviour
 {
-    public int Width = 5;
-    public int Height = 5;
+    [SerializeField] private MapData mapDataAsset;
+    private TileData[,] mapData; 
     public GameObject MapSize;
+    public int Width => mapDataAsset.width;
+    public int Height => mapDataAsset.height;
 
     public float TileWidthSize;
     public float TileHeightSize;
@@ -23,10 +25,24 @@ public class Map : MonoBehaviour
 
     private void Awake()
     {
-        TileWidthSize = MapSize.transform.localScale.x / Width;
-        TileHeightSize = MapSize.transform.localScale.y/ Height;
-        MapStartX = MapSize.transform.position.x- MapSize.transform.localScale.x / 2;
-        MapStartY = MapSize.transform.position.y- MapSize.transform.localScale.y / 2;
+        int width = mapDataAsset.width; // 맵 데이터에서 너비와 높이를 가져옴
+        int height = mapDataAsset.height;
+
+        TileWidthSize = MapSize.transform.localScale.x / width;
+        TileHeightSize = MapSize.transform.localScale.y/ height;
+
+        MapStartX = MapSize.transform.position.x
+            - MapSize.transform.localScale.x / 2;
+        
+        MapStartY = MapSize.transform.position.y
+            - MapSize.transform.localScale.y / 2;
+
+        mapData = new TileData[width, height];
+       
+        foreach (TileData tileData in mapDataAsset.tiles) // 타일데이터에 타일 좌표들을 저장
+        {
+            mapData[tileData.x, tileData.y] = tileData;
+        } 
 
         // 스포너는 에디터에서 범위 잡는 용도라 게임 시작하면 안 보이게 (위치·크기 값은 그대로 씀)
         SpriteRenderer spawnerRenderer = MapSize.GetComponent<SpriteRenderer>();
@@ -36,9 +52,9 @@ public class Map : MonoBehaviour
 
     void Start()
     {
-        for (int x = 0; x < Width; x++)
+        for (int x = 0; x < mapDataAsset.width; x++)
         {
-            for (int y = 0; y < Height; y++)
+            for (int y = 0; y < mapDataAsset.height; y++)
             {
                 GameObject Tile = Instantiate(TilePrefab);
 

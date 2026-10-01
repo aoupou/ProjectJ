@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Net.Sockets;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static Battle;
@@ -41,21 +40,21 @@ public class Player : MonoBehaviour
     {
         SetSize();
 
-        int randomx = UnityEngine.Random.Range(0, map.Width);
-        int randomy = UnityEngine.Random.Range(0, map.Height);
+        int random_x = UnityEngine.Random.Range(0, map.Width);
+        int random_y = UnityEngine.Random.Range(0, map.Height);
 
-        float playerx =
+        float player_x =
             map.MapStartX
             + (map.TileWidthSize / 2)
-            + (map.TileWidthSize * randomx);
+            + (map.TileWidthSize * random_x);
 
-        float playery =
+        float player_y =
             map.MapStartY
             + (map.TileHeightSize / 2)
-            + (map.TileHeightSize * randomy);
+            + (map.TileHeightSize * random_y);
 
-        transform.localPosition =
-            new Vector3(playerx, playery, 1);
+        transform.position =
+            new Vector3(player_x, player_y, 1);
 
         animator.SetState("Idle", true);
     }

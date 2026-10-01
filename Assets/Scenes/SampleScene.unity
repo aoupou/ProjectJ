@@ -728,8 +728,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5167b341eed03494f90c75fe980d72ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Map
-  Width: 5
-  Height: 5
+  mapDataAsset: {fileID: 11400000, guid: 416853608b3837943a03d57f5a9340b6, type: 2}
   MapSize: {fileID: 762981254}
   TileWidthSize: 0
   TileHeightSize: 0
