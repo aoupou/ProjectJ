@@ -10,6 +10,7 @@ public enum ItemEffectType
 // 아이템 하나의 정보. Assets/Resources/Items 폴더에 만들어두면 자동으로 불러온다
 // 만들기: Project 창 우클릭 → Create → ProjectJ → Item
 [CreateAssetMenu(fileName = "Item_", menuName = "ProjectJ/Item")]
+[GameDatabase("아이템", "Items")]
 public class ItemData : ScriptableObject
 {
     // 세이브용 고유 번호. 에디터가 에셋 GUID로 자동으로 채움 (Editor/ItemDataIdFixer.cs)

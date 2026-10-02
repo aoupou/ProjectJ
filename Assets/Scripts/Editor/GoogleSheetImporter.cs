@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -8,7 +10,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 
-// 구글 시트 → ItemData / CharacterData 에셋 가져오기
+// 구글 시트 → ItemData / CharacterData / 새 데이터베이스 만들기로 만든 데이터 에셋 가져오기
 // 상단 메뉴 ProjectJ → 구글 시트
 //
 // 시트 규칙
@@ -39,6 +41,12 @@ public static class GoogleSheetImporter
 
         if (!string.IsNullOrWhiteSpace(settings.charactersUrl))
             report.Add(ImportCharacters(settings.charactersUrl));
+
+        foreach (GoogleSheetSettings.SheetLink link in settings.otherSheets)
+        {
+            if (!string.IsNullOrWhiteSpace(link.url))
+                report.Add(ImportOther(link));
+        }
 
         if (report.Count == 0)
         {
@@ -94,8 +102,17 @@ public static class GoogleSheetImporter
         File.WriteAllText(Path.Combine(folder, ItemsSheet + ".csv"), BuildItemsCsv(), new UTF8Encoding(true));
         File.WriteAllText(Path.Combine(folder, CharactersSheet + ".csv"), BuildCharactersCsv(), new UTF8Encoding(true));
 
+        List<string> files = new List<string> { ItemsSheet + ".csv", CharactersSheet + ".csv" };
+
+        foreach (Type type in OtherDataTypes())
+        {
+            string sheetName = Info(type).DisplayName;
+            File.WriteAllText(Path.Combine(folder, sheetName + ".csv"), BuildOtherCsv(type), new UTF8Encoding(true));
+            files.Add(sheetName + ".csv");
+        }
+
         EditorUtility.DisplayDialog("시트 양식 CSV 내보내기",
-            $"{ItemsSheet}.csv, {CharactersSheet}.csv 저장 완료\n\n" +
+            $"{string.Join(", ", files)} 저장 완료\n\n" +
             "구글 시트에서 탭마다 파일 → 가져오기 → 업로드 →\n\"현재 시트 바꾸기\"로 넣으면 됩니다.", "확인");
 
         EditorUtility.RevealInFinder(Path.Combine(folder, ItemsSheet + ".csv"));
@@ -120,6 +137,8 @@ public static class GoogleSheetImporter
             return error;
 
         SpriteFinder sprites = new SpriteFinder();
+        AssetFinder assets = new AssetFinder();
+        List<FieldInfo> extraFields = ItemExtraFields();
 
         return ImportRows<ItemData>(table, ItemsSheet, ItemsFolder, (row, item) =>
         {
@@ -139,28 +158,48 @@ public static class GoogleSheetImporter
                 else
                     item.icon = sprite;
             });
+
+            // 위에서 따로 처리하지 않은 칸 (칸 추가 툴로 넣은 것)은 자동으로
+            ApplyFields(row, item, extraFields, assets);
         });
+    }
+
+    // 아이템 시트에서 위에서 직접 처리하는 칸 (나머지는 자동)
+    private static readonly HashSet<string> ItemCustomFields = new HashSet<string>
+    {
+        "itemName", "icon", "concept", "effectText", "price", "unlockStage", "effectType", "value",
+    };
+
+    private static List<FieldInfo> ItemExtraFields()
+    {
+        return SheetFields(typeof(ItemData)).Where(f => !ItemCustomFields.Contains(f.Name)).ToList();
     }
 
     private static string BuildItemsCsv()
     {
         StringBuilder csv = new StringBuilder();
-        AppendCsvLine(csv, "key", "itemName", "icon", "price", "unlock", "effectType", "value", "concept", "effectText");
-        AppendCsvLine(csv, "#설명: 파일 이름(영문)", "이름", "아이콘 스프라이트 이름", "가격", "상점 해금 (드롭다운)",
-            "효과 (드롭다운)", "효과 수치", "콘셉트 설명", "효과 설명");
+        List<FieldInfo> extraFields = ItemExtraFields();
+
+        AppendCsvLine(csv, new[] { "key", "itemName", "icon", "price", "unlock", "effectType", "value", "concept", "effectText" }
+            .Concat(extraFields.Select(f => f.Name)).ToArray());
+        AppendCsvLine(csv, new[] { "#설명: 파일 이름(영문)", "이름", "아이콘 스프라이트 이름", "가격", "상점 해금 (드롭다운)",
+                "효과 (드롭다운)", "효과 수치", "콘셉트 설명", "효과 설명" }
+            .Concat(extraFields.Select(Description)).ToArray());
 
         foreach (string path in AssetsInFolder<ItemData>(ItemsFolder))
         {
             ItemData item = AssetDatabase.LoadAssetAtPath<ItemData>(path);
-            AppendCsvLine(csv, item.name, item.itemName, item.icon != null ? item.icon.name : "", item.price.ToString(),
-                UnlockLabel(item.unlockStage), EnumLabel(item.effectType), item.value.ToString(),
-                item.concept, item.effectText);
+            AppendCsvLine(csv, new[] { item.name, item.itemName, item.icon != null ? item.icon.name : "", item.price.ToString(),
+                    UnlockLabel(item.unlockStage), EnumLabel(item.effectType), item.value.ToString(),
+                    item.concept, item.effectText }
+                .Concat(extraFields.Select(f => CellText(f.GetValue(item)))).ToArray());
         }
 
         return csv.ToString();
     }
 
     // ───────── 캐릭터 (플레이어 / 적 공통) ─────────
+    // CharacterData의 칸을 전부 자동으로 읽음 (칸 추가 툴로 넣은 칸도 열 이름 = 변수 이름)
 
     private static string ImportCharacters(string url)
     {
@@ -170,42 +209,42 @@ public static class GoogleSheetImporter
         if (!table.Require(out error, "key"))
             return error;
 
-        return ImportRows<CharacterData>(table, CharactersSheet, CharactersFolder, (row, data) =>
-        {
-            row.Text("displayName", v => data.displayName = v);
-            row.Int("hp", v => data.hp = v);
-            row.Int("attack", v => data.attack = v);
-        });
+        return ImportByFields(table, CharactersSheet, CharactersFolder, typeof(CharacterData));
     }
 
     private static string BuildCharactersCsv()
     {
-        StringBuilder csv = new StringBuilder();
-        AppendCsvLine(csv, "key", "displayName", "hp", "attack");
-        AppendCsvLine(csv, "#설명: player = 플레이어 / enemy = 적", "이름", "시작 HP (1 = 반 칸)", "공격력");
+        List<CharacterData> defaults = new List<CharacterData>();
 
-        List<string> paths = AssetsInFolder<CharacterData>(CharactersFolder);
-
-        if (paths.Count == 0)
+        // 아직 가져온 적 없으면 기본값으로 플레이어 / 적 양식 채움
+        if (AssetsInFolder<CharacterData>(CharactersFolder).Count == 0)
         {
-            // 아직 가져온 적 없으면 지금 씬에 적힌 값으로 양식 채움
-            AppendCsvLine(csv, CharacterDatabase.PlayerKey, "플레이어", "10", "1");
-            AppendCsvLine(csv, CharacterDatabase.EnemyKey, "적", "10", "1");
+            foreach ((string key, string label) in new[] { (CharacterDatabase.PlayerKey, "플레이어"), (CharacterDatabase.EnemyKey, "적") })
+            {
+                CharacterData data = ScriptableObject.CreateInstance<CharacterData>();
+                data.name = key;
+                data.displayName = label;
+                defaults.Add(data);
+            }
         }
 
-        foreach (string path in paths)
-        {
-            CharacterData data = AssetDatabase.LoadAssetAtPath<CharacterData>(path);
-            AppendCsvLine(csv, data.name, data.displayName, data.hp.ToString(), data.attack.ToString());
-        }
+        string csv = BuildFieldsCsv(typeof(CharacterData), CharactersFolder, "#설명: player = 플레이어 / enemy = 적", defaults);
 
-        return csv.ToString();
+        foreach (CharacterData data in defaults)
+            UnityEngine.Object.DestroyImmediate(data);
+
+        return csv;
     }
 
     // ───────── 공통: 행 → 에셋 ─────────
 
     private static string ImportRows<T>(Table table, string sheetName, string folder, Action<Row, T> apply)
         where T : ScriptableObject
+    {
+        return ImportRows(table, sheetName, folder, typeof(T), (row, asset) => apply(row, (T)asset));
+    }
+
+    private static string ImportRows(Table table, string sheetName, string folder, Type type, Action<Row, ScriptableObject> apply)
     {
         if (!AssetDatabase.IsValidFolder(folder))
             AssetDatabase.CreateFolder(Path.GetDirectoryName(folder).Replace('\\', '/'), Path.GetFileName(folder));
@@ -238,10 +277,10 @@ public static class GoogleSheetImporter
                 }
 
                 string path = $"{folder}/{key}.asset";
-                T asset = AssetDatabase.LoadAssetAtPath<T>(path);
+                ScriptableObject asset = AssetDatabase.LoadAssetAtPath(path, type) as ScriptableObject;
 
                 // 복사본에 먼저 적용해보고 오류가 없을 때만 실제 에셋에 반영
-                T copy = asset != null ? UnityEngine.Object.Instantiate(asset) : ScriptableObject.CreateInstance<T>();
+                ScriptableObject copy = asset != null ? UnityEngine.Object.Instantiate(asset) : ScriptableObject.CreateInstance(type);
                 copy.name = key;
 
                 apply(row, copy);
@@ -284,7 +323,7 @@ public static class GoogleSheetImporter
         // 시트에서 빠진 에셋은 실수일 수도 있으니 지우지 않고 알려주기만 함
         List<string> missing = new List<string>();
 
-        foreach (string path in AssetsInFolder<T>(folder))
+        foreach (string path in AssetsInFolder(folder, type))
         {
             string name = Path.GetFileNameWithoutExtension(path);
 
@@ -315,16 +354,374 @@ public static class GoogleSheetImporter
 
     private static List<string> AssetsInFolder<T>(string folder) where T : UnityEngine.Object
     {
+        return AssetsInFolder(folder, typeof(T));
+    }
+
+    private static List<string> AssetsInFolder(string folder, Type type)
+    {
         List<string> paths = new List<string>();
 
         if (!AssetDatabase.IsValidFolder(folder))
             return paths;
 
-        foreach (string guid in AssetDatabase.FindAssets("t:" + typeof(T).Name, new[] { folder }))
+        foreach (string guid in AssetDatabase.FindAssets("t:" + type.Name, new[] { folder }))
             paths.Add(AssetDatabase.GUIDToAssetPath(guid));
 
         paths.Sort(StringComparer.Ordinal);
         return paths;
+    }
+
+    // ───────── 다른 데이터 (새 데이터베이스 만들기로 만든 것) ─────────
+    // 시트 열 이름 = 변수 이름. 아래 형식을 자동으로 읽는다
+    //  string / int / long / float / double / bool (TRUE·FALSE, O·X, 1·0)
+    //  Vector2 / Vector3 / Vector2Int / Vector3Int ("1, 2" 처럼), Color ("#FF8800" 또는 "#FF880080")
+    //  enum (코드 이름 또는 드롭다운 이름), 에셋 / 다른 데이터 (이름으로 찾음)
+    //  List / 배열은 칸 하나에 | 로 구분 ("sword | bow")
+
+    private static GameDatabaseAttribute Info(Type type)
+    {
+        return (GameDatabaseAttribute)Attribute.GetCustomAttribute(type, typeof(GameDatabaseAttribute));
+    }
+
+    // 아이템 / 캐릭터는 위에서 따로 처리하므로 제외
+    private static IEnumerable<Type> OtherDataTypes()
+    {
+        return TypeCache.GetTypesWithAttribute<GameDatabaseAttribute>()
+            .Where(t => typeof(ScriptableObject).IsAssignableFrom(t) && !t.IsAbstract
+                        && t != typeof(ItemData) && t != typeof(CharacterData))
+            .OrderBy(t => t.Name);
+    }
+
+    private static readonly Regex Number = new Regex(@"-?\d+(\.\d+)?([eE][-+]?\d+)?");
+
+    // 칸 하나에 들어가는 형식
+    private static bool IsCellType(Type type)
+    {
+        return type == typeof(string) || type == typeof(int) || type == typeof(long) || type == typeof(float)
+               || type == typeof(double) || type == typeof(bool)
+               || type == typeof(Vector2) || type == typeof(Vector3) || type == typeof(Vector2Int) || type == typeof(Vector3Int)
+               || type == typeof(Color) || type.IsEnum || typeof(UnityEngine.Object).IsAssignableFrom(type);
+    }
+
+    // List<T> / T[]면 T, 아니면 null
+    private static Type ElementType(Type type)
+    {
+        if (type.IsArray)
+            return type.GetElementType();
+
+        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
+            return type.GetGenericArguments()[0];
+
+        return null;
+    }
+
+    // 시트 열로 쓰는 칸: Inspector에 보이는 변수 중 위 형식인 것 (AnimationCurve 같은 건 Inspector에서만)
+    private static List<FieldInfo> SheetFields(Type type)
+    {
+        List<FieldInfo> fields = new List<FieldInfo>();
+
+        foreach (FieldInfo field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+        {
+            bool serialized = field.IsPublic
+                ? !field.IsDefined(typeof(NonSerializedAttribute), true)
+                : field.IsDefined(typeof(SerializeField), true);
+
+            if (!serialized || field.IsDefined(typeof(HideInInspector), true))
+                continue;
+
+            Type element = ElementType(field.FieldType);
+
+            if (IsCellType(field.FieldType) || (element != null && IsCellType(element)))
+                fields.Add(field);
+        }
+
+        return fields;
+    }
+
+    private static string ImportOther(GoogleSheetSettings.SheetLink link)
+    {
+        Type type = OtherDataTypes().FirstOrDefault(t => t.Name == link.dataType);
+
+        if (type == null)
+            return $"[{link.dataType}] 이런 데이터 종류가 없음. 링크 설정의 Other Sheets 이름을 확인해 주세요.";
+
+        string sheetName = Info(type).DisplayName;
+
+        if (!TryDownloadTable(link.url, sheetName, out Table table, out string error))
+            return error;
+
+        if (!table.Require(out error, "key"))
+            return error;
+
+        return ImportByFields(table, sheetName, "Assets/Resources/" + Info(type).Folder, type);
+    }
+
+    // 칸을 전부 자동으로 읽어서 가져오기
+    private static string ImportByFields(Table table, string sheetName, string folder, Type type)
+    {
+        AssetFinder assets = new AssetFinder();
+        List<FieldInfo> fields = SheetFields(type);
+
+        // 시트 열 이름은 대소문자를 안 가려서 hp / Hp 같은 칸이 같이 있으면 구분이 안 됨
+        string[] clashes = fields.GroupBy(f => f.Name, StringComparer.OrdinalIgnoreCase)
+            .Where(g => g.Count() > 1)
+            .Select(g => string.Join(" / ", g.Select(f => f.Name)))
+            .ToArray();
+
+        if (clashes.Length > 0)
+            return $"[{sheetName}] 대소문자만 다른 칸이 있어서 시트 열을 구분할 수 없음: {string.Join(", ", clashes)}. 칸 이름을 바꿔주세요.";
+
+        return ImportRows(table, sheetName, folder, type, (row, asset) => ApplyFields(row, asset, fields, assets));
+    }
+
+    // 행의 값을 칸마다 넣기 (빈 칸은 그대로)
+    private static void ApplyFields(Row row, UnityEngine.Object asset, List<FieldInfo> fields, AssetFinder assets)
+    {
+        foreach (FieldInfo field in fields)
+        {
+            string cell = row.Get(field.Name);
+
+            if (cell.Length == 0)
+                continue; // 빈 칸은 그대로
+
+            Type element = ElementType(field.FieldType);
+
+            if (element == null)
+            {
+                if (TryParseCell(field.FieldType, cell, assets, out object value, out string cellError))
+                    field.SetValue(asset, value);
+                else
+                    row.Error(field.Name, cellError);
+
+                continue;
+            }
+
+            List<object> values = new List<object>();
+            bool ok = true;
+
+            foreach (string part in cell.Split('|'))
+            {
+                if (part.Trim().Length == 0)
+                    continue;
+
+                if (!TryParseCell(element, part, assets, out object value, out string cellError))
+                {
+                    row.Error(field.Name, cellError);
+                    ok = false;
+                    break;
+                }
+
+                values.Add(value);
+            }
+
+            if (!ok)
+                continue;
+
+            if (field.FieldType.IsArray)
+            {
+                Array array = Array.CreateInstance(element, values.Count);
+
+                for (int i = 0; i < values.Count; i++)
+                    array.SetValue(values[i], i);
+
+                field.SetValue(asset, array);
+            }
+            else
+            {
+                System.Collections.IList list =
+                    (System.Collections.IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(element));
+
+                foreach (object value in values)
+                    list.Add(value);
+
+                field.SetValue(asset, list);
+            }
+        }
+    }
+
+    // 시트 글자 하나 → 값
+    private static bool TryParseCell(Type type, string text, AssetFinder assets, out object value, out string error)
+    {
+        string s = text.Trim();
+        CultureInfo inv = CultureInfo.InvariantCulture;
+        value = null;
+        error = null;
+
+        if (type == typeof(string))
+        {
+            value = s;
+            return true;
+        }
+
+        if (type == typeof(int) && int.TryParse(s.Replace(",", ""), NumberStyles.Integer, inv, out int i))
+        {
+            value = i;
+            return true;
+        }
+
+        if (type == typeof(long) && long.TryParse(s.Replace(",", ""), NumberStyles.Integer, inv, out long l))
+        {
+            value = l;
+            return true;
+        }
+
+        if (type == typeof(float) && float.TryParse(s.Replace(",", ""), NumberStyles.Float, inv, out float f))
+        {
+            value = f;
+            return true;
+        }
+
+        if (type == typeof(double) && double.TryParse(s.Replace(",", ""), NumberStyles.Float, inv, out double d))
+        {
+            value = d;
+            return true;
+        }
+
+        if (type == typeof(bool))
+        {
+            switch (s.ToUpperInvariant())
+            {
+                case "TRUE": case "O": case "1": case "켜기": value = true; return true;
+                case "FALSE": case "X": case "0": case "끄기": value = false; return true;
+            }
+
+            error = $"'{s}'는 TRUE / FALSE가 아님";
+            return false;
+        }
+
+        if (type == typeof(Vector2) || type == typeof(Vector3) || type == typeof(Vector2Int) || type == typeof(Vector3Int))
+        {
+            float[] n = Number.Matches(s).Cast<Match>().Select(m => float.Parse(m.Value, inv)).ToArray();
+            bool three = type == typeof(Vector3) || type == typeof(Vector3Int);
+
+            if (n.Length == (three ? 3 : 2))
+            {
+                if (type == typeof(Vector2)) value = new Vector2(n[0], n[1]);
+                else if (type == typeof(Vector3)) value = new Vector3(n[0], n[1], n[2]);
+                else if (type == typeof(Vector2Int)) value = new Vector2Int(Mathf.RoundToInt(n[0]), Mathf.RoundToInt(n[1]));
+                else value = new Vector3Int(Mathf.RoundToInt(n[0]), Mathf.RoundToInt(n[1]), Mathf.RoundToInt(n[2]));
+                return true;
+            }
+
+            error = $"'{s}'는 {type.Name}가 아님. \"{(three ? "1, 2, 3" : "1, 2")}\"처럼 적어주세요";
+            return false;
+        }
+
+        if (type == typeof(Color))
+        {
+            if (ColorUtility.TryParseHtmlString(s.StartsWith("#") ? s : "#" + s, out Color color))
+            {
+                value = color;
+                return true;
+            }
+
+            error = $"'{s}'는 색이 아님. \"#FF8800\"처럼 적어주세요";
+            return false;
+        }
+
+        if (type.IsEnum)
+        {
+            List<string> labels = new List<string>();
+
+            // 드롭다운 이름(HP 회복) 또는 코드 이름(HealHP)
+            foreach (System.Enum option in System.Enum.GetValues(type))
+            {
+                string label = EnumLabel(option);
+                labels.Add(label);
+
+                if (s == label || s.Equals(option.ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    value = option;
+                    return true;
+                }
+            }
+
+            error = $"'{s}'는 없는 값. 가능한 값: {string.Join(", ", labels)}";
+            return false;
+        }
+
+        if (typeof(UnityEngine.Object).IsAssignableFrom(type))
+        {
+            value = assets.Find(type, s, out error);
+            return value != null;
+        }
+
+        if (error == null)
+            error = $"'{s}'는 {type.Name}(으)로 못 읽음";
+
+        return false;
+    }
+
+    private static string BuildOtherCsv(Type type)
+    {
+        return BuildFieldsCsv(type, "Assets/Resources/" + Info(type).Folder, "#설명: 파일 이름(영문)", null);
+    }
+
+    // 칸 목록으로 CSV 만들기. extraRows = 폴더에 없지만 양식에 넣을 예시 데이터
+    private static string BuildFieldsCsv(Type type, string folder, string keyDescription, IEnumerable<UnityEngine.Object> extraRows)
+    {
+        List<FieldInfo> fields = SheetFields(type);
+        StringBuilder csv = new StringBuilder();
+
+        AppendCsvLine(csv, new[] { "key" }.Concat(fields.Select(f => f.Name)).ToArray());
+        AppendCsvLine(csv, new[] { keyDescription }.Concat(fields.Select(Description)).ToArray());
+
+        IEnumerable<UnityEngine.Object> rows = AssetsInFolder(folder, type).Select(path => AssetDatabase.LoadAssetAtPath(path, type));
+
+        foreach (UnityEngine.Object asset in extraRows != null ? extraRows.Concat(rows) : rows)
+            AppendCsvLine(csv, new[] { asset.name }.Concat(fields.Select(f => CellText(f.GetValue(asset)))).ToArray());
+
+        return csv.ToString();
+    }
+
+    // 설명 행: 툴팁 + 적는 법
+    private static string Description(FieldInfo field)
+    {
+        string tooltip = field.GetCustomAttribute<TooltipAttribute>()?.tooltip ?? "";
+        Type element = ElementType(field.FieldType);
+        string hint = FormatHint(element ?? field.FieldType);
+
+        if (element != null)
+            hint = (hint.Length > 0 ? hint : "값") + " | 로 여러 개";
+
+        if (hint.Length == 0)
+            return tooltip;
+
+        return tooltip.Length > 0 ? $"{tooltip} ({hint})" : hint;
+    }
+
+    private static string FormatHint(Type type)
+    {
+        if (type == typeof(Vector2) || type == typeof(Vector2Int)) return "x, y";
+        if (type == typeof(Vector3) || type == typeof(Vector3Int)) return "x, y, z";
+        if (type == typeof(Color)) return "#RRGGBB";
+        if (type == typeof(bool)) return "TRUE / FALSE";
+        if (type.IsEnum) return string.Join(" / ", System.Enum.GetValues(type).Cast<System.Enum>().Select(EnumLabel));
+        if (typeof(UnityEngine.Object).IsAssignableFrom(type)) return type.Name + " 이름";
+        return "";
+    }
+
+    private static string CellText(object value)
+    {
+        CultureInfo inv = CultureInfo.InvariantCulture;
+
+        switch (value)
+        {
+            case null: return "";
+            case UnityEngine.Object obj: return obj != null ? obj.name : "";
+            case string text: return text;
+            case bool b: return b ? "TRUE" : "FALSE";
+            case float f: return f.ToString(inv);
+            case double d: return d.ToString(inv);
+            case Vector2 v: return $"{v.x.ToString(inv)}, {v.y.ToString(inv)}";
+            case Vector3 v: return $"{v.x.ToString(inv)}, {v.y.ToString(inv)}, {v.z.ToString(inv)}";
+            case Vector2Int v: return $"{v.x}, {v.y}";
+            case Vector3Int v: return $"{v.x}, {v.y}, {v.z}";
+            case Color c: return "#" + (c.a < 1f ? ColorUtility.ToHtmlStringRGBA(c) : ColorUtility.ToHtmlStringRGB(c));
+            case System.Enum e: return EnumLabel(e);
+            case System.Collections.IList list: return string.Join(" | ", list.Cast<object>().Select(CellText));
+            default: return Convert.ToString(value, inv);
+        }
     }
 
     // ───────── 드롭다운 표시 이름 ─────────
@@ -640,6 +1037,63 @@ public static class GoogleSheetImporter
             }
 
             Error(column, $"'{value}'는 없는 값. 가능한 값: {string.Join(", ", labels)}");
+        }
+    }
+
+    // 이름으로 에셋 찾기 (형식 상관없이. 스프라이트처럼 한 파일 안에 여러 개 있는 것도 포함)
+    // 형식마다 처음 쓸 때 한 번만 전체 검색
+    private class AssetFinder
+    {
+        private readonly Dictionary<Type, Dictionary<string, List<UnityEngine.Object>>> cache =
+            new Dictionary<Type, Dictionary<string, List<UnityEngine.Object>>>();
+
+        public UnityEngine.Object Find(Type type, string name, out string error)
+        {
+            if (!cache.TryGetValue(type, out Dictionary<string, List<UnityEngine.Object>> byName))
+                cache.Add(type, byName = Build(type));
+
+            error = null;
+
+            if (!byName.TryGetValue(name, out List<UnityEngine.Object> found))
+            {
+                error = $"'{name}' 이름의 {type.Name}이(가) 없음";
+                return null;
+            }
+
+            if (found.Count > 1)
+                Debug.LogWarning($"[구글 시트] '{name}' {type.Name}이(가) {found.Count}개 있어서 첫 번째 사용: {AssetDatabase.GetAssetPath(found[0])}");
+
+            return found[0];
+        }
+
+        private static Dictionary<string, List<UnityEngine.Object>> Build(Type type)
+        {
+            Dictionary<string, List<UnityEngine.Object>> byName = new Dictionary<string, List<UnityEngine.Object>>();
+            HashSet<string> paths = new HashSet<string>();
+
+            foreach (string guid in AssetDatabase.FindAssets("t:" + type.Name, new[] { "Assets" }))
+                paths.Add(AssetDatabase.GUIDToAssetPath(guid));
+
+            foreach (string path in paths)
+            {
+                // 프리팹은 파일 자체만 (안에 든 자식 오브젝트는 제외)
+                UnityEngine.Object[] assets = type == typeof(GameObject)
+                    ? new[] { AssetDatabase.LoadMainAssetAtPath(path) }
+                    : AssetDatabase.LoadAllAssetsAtPath(path);
+
+                foreach (UnityEngine.Object asset in assets)
+                {
+                    if (asset == null || !type.IsInstanceOfType(asset))
+                        continue;
+
+                    if (!byName.TryGetValue(asset.name, out List<UnityEngine.Object> list))
+                        byName.Add(asset.name, list = new List<UnityEngine.Object>());
+
+                    list.Add(asset);
+                }
+            }
+
+            return byName;
         }
     }
 

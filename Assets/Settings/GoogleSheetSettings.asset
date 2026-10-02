@@ -14,3 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp-Editor::GoogleSheetSettings
   itemsUrl: https://docs.google.com/spreadsheets/d/1qSyeZ49WeJ4J9ESTJ-3yRzjryIuxMQPIrz6ownrB1ww/edit?gid=340932595#gid=340932595
   charactersUrl: https://docs.google.com/spreadsheets/d/1qSyeZ49WeJ4J9ESTJ-3yRzjryIuxMQPIrz6ownrB1ww/edit?gid=28265054#gid=28265054
+  otherSheets:
+  - dataType: TestData
+    url: 
+  - dataType: TEsteTEstData
+    url: 
