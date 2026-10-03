@@ -4,8 +4,9 @@ using UnityEngine.SceneManagement;
 // 전투 씬이 열리면 CharacterData(구글 시트 스탯)를 플레이어 / 적에게 넣어준다
 // 씬 파일(.unity)은 건드리지 않음 (ItemSceneHook과 같은 방식)
 //
-//  Player가 붙은 character_HP → "player" 스탯 (HP, 공격력)
+//  Player가 붙은 character_HP → "player" 스탯 (HP)
 //  그 외 character_HP         → "enemy" 스탯 (HP)
+// 공격력은 캐릭터 데이터에서 뺐음 → Battle에 적힌 값 그대로 씀
 //
 // sceneLoaded는 Awake 다음, Start 전에 불리므로 하트 UI가 처음부터 시트 HP로 그려진다
 // 시트에 해당 key가 없으면 씬에 적힌 값을 그대로 쓴다
@@ -28,9 +29,6 @@ public static class CharacterStatHook
 
         CharacterData player = CharacterDatabase.Get(CharacterDatabase.PlayerKey);
         CharacterData enemy = CharacterDatabase.Get(CharacterDatabase.EnemyKey);
-
-        if (player != null)
-            battle.SetAttackDamage(player.attack);
 
         foreach (GameObject root in scene.GetRootGameObjects())
         {

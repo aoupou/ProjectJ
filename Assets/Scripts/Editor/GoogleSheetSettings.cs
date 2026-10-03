@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -14,6 +16,19 @@ public class GoogleSheetSettings : ScriptableObject
     [Tooltip("캐릭터 탭 주소 (플레이어 / 적 스탯)")]
     public string charactersUrl;
 
+    [Serializable]
+    public class SheetLink
+    {
+        [Tooltip("데이터 종류 (코드 이름, 예: WeaponData)")]
+        public string dataType;
+
+        [Tooltip("그 데이터 탭 주소")]
+        public string url;
+    }
+
+    [Tooltip("새 데이터베이스 만들기로 만든 데이터 종류의 탭 주소 (만들 때 자동으로 칸이 추가됨)")]
+    public List<SheetLink> otherSheets = new List<SheetLink>();
+
     public static GoogleSheetSettings GetOrCreate()
     {
         GoogleSheetSettings settings = AssetDatabase.LoadAssetAtPath<GoogleSheetSettings>(AssetPath);
@@ -26,5 +41,16 @@ public class GoogleSheetSettings : ScriptableObject
         }
 
         return settings;
+    }
+
+    // 새 데이터베이스 만들기에서 호출. 주소는 비워두고 칸만 만든다
+    public void AddOtherSheet(string dataType)
+    {
+        if (otherSheets.Exists(s => s.dataType == dataType))
+            return;
+
+        otherSheets.Add(new SheetLink { dataType = dataType });
+        EditorUtility.SetDirty(this);
+        AssetDatabase.SaveAssets();
     }
 }
