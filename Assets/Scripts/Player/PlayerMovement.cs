@@ -10,7 +10,6 @@ public class Player : MonoBehaviour
     public Map map;
 
     public float PlayerSize;
-
     [SerializeField] private AudioClip moveInSound;  // 마법진으로 들어갈 때
     [SerializeField] private AudioClip moveOutSound; // 마법진에서 나올 때
     [SerializeField, Range(0f, 1f)] private float moveVolume = 1f;
@@ -34,12 +33,28 @@ public class Player : MonoBehaviour
         if (audioSource == null)
             audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.playOnAwake = false;
+
+        SetSize();      // 플레이어 크기 설정
+        SetPosition();  // 플레이어 위치 설정
     }
 
     private void Start()
     {
-        SetSize();
+        animator.SetState("Idle", true);
+    }
 
+    private void SetSize()
+    {
+        transform.localScale = new Vector3(
+            map.TileWidthSize * PlayerSize,
+            map.TileHeightSize * PlayerSize,
+            1
+        );
+    }
+
+    private void SetPosition()
+    {
+        // 맵의 타일 중 하나를 무작위로 선택하여 플레이어의 위치를 설정
         int random_x = UnityEngine.Random.Range(0, map.Width);
         int random_y = UnityEngine.Random.Range(0, map.Height);
 
@@ -55,18 +70,8 @@ public class Player : MonoBehaviour
 
         transform.position =
             new Vector3(player_x, player_y, 1);
-
-        animator.SetState("Idle", true);
     }
 
-    private void SetSize()
-    {
-        transform.localScale = new Vector3(
-            map.TileWidthSize * PlayerSize,
-            map.TileHeightSize * PlayerSize,
-            1
-        );
-    }
     public void MoveUp()
     {
         if (isMoving)
@@ -76,6 +81,7 @@ public class Player : MonoBehaviour
             Vector3.up * map.TileHeightSize
         ));
     }
+
     public void MoveDown()
     {
         if (isMoving)
@@ -85,6 +91,7 @@ public class Player : MonoBehaviour
             Vector3.down * map.TileHeightSize
         ));
     }
+
     public void MoveLeft()
     {
         if (isMoving)
@@ -96,6 +103,7 @@ public class Player : MonoBehaviour
             Vector3.left * map.TileWidthSize
         ));
     }
+
     public void MoveRight()
     {
         if (isMoving)
@@ -119,7 +127,7 @@ public class Player : MonoBehaviour
         StartCoroutine(Move(
             Vector3.up * map.TileHeightSize
         ));
-        
+
         MoveSellecting();
     }
 
@@ -134,11 +142,11 @@ public class Player : MonoBehaviour
         StartCoroutine(Move(
             Vector3.down * map.TileHeightSize
         ));
-        
+
         MoveSellecting();
     }
 
-    public void OnMoveLeft(InputValue value) 
+    public void OnMoveLeft(InputValue value)
     {
         if (battle.Step != Battle_Step.SelectDirection)
             return;
@@ -151,7 +159,7 @@ public class Player : MonoBehaviour
         StartCoroutine(Move(
             Vector3.left * map.TileWidthSize
         ));
-        
+
         MoveSellecting();
     }
 
@@ -168,10 +176,9 @@ public class Player : MonoBehaviour
         StartCoroutine(Move(
             Vector3.right * map.TileWidthSize
         ));
-        
+
         MoveSellecting();
     }
-
 
     private IEnumerator Move(Vector3 movement)
     {

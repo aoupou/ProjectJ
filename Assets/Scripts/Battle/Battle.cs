@@ -17,6 +17,7 @@ public class Battle : MonoBehaviour
     [SerializeField] private Camera mainCamera; 
     [SerializeField] private int attackDamage = 1; // 임시
     [SerializeField] private WeaponType selectweapon;
+    [SerializeField] private enemy_movement enemy;
     public Turn_UI turnUI;
     private Player playerScript;
 
@@ -64,6 +65,7 @@ public class Battle : MonoBehaviour
             isAiming = false;
             AttackCells();
             tileColor.ResetColor();
+            enemy.SelectAction();
             EndTurn();
         }
     }
@@ -363,6 +365,9 @@ public class Battle : MonoBehaviour
     { 
         Step = Battle_Step.TurnEnd;
 
+        // 플레이어 이동이 끝났으므로 적 행동 선택
+        enemy.SelectAction();
+
         EndTurn();
     }
 
@@ -388,4 +393,98 @@ public class Battle : MonoBehaviour
         }
     }
 
+    public void EnemyAttack()
+    {
+        Vector2 direction = GetEnemyAttackDirection();
+
+        Vector2 enemyPosition = enemy.transform.position;
+
+        float tileWidth = playerScript.map.TileWidthSize;
+        float tileHeight = playerScript.map.TileHeightSize;
+
+        // 적 바로 앞의 칸
+        Vector2 targetCenter;
+
+        if (direction == Vector2.left ||
+            direction == Vector2.right)
+        {
+            targetCenter =
+                enemyPosition + direction * tileWidth;
+        }
+        else
+        {
+            targetCenter =
+                enemyPosition + direction * tileHeight;
+        }
+
+        Vector2 target1;
+        Vector2 target2;
+        Vector2 target3;
+
+        // 세로 방향 공격
+        if (direction == Vector2.up ||
+            direction == Vector2.down)
+        {
+            target1 =
+                targetCenter + Vector2.left * tileWidth;
+
+            target2 =
+                targetCenter;
+
+            target3 =
+                targetCenter + Vector2.right * tileWidth;
+        }
+        // 가로 방향 공격
+        else
+        {
+            target1 =
+                targetCenter + Vector2.up * tileHeight;
+
+            target2 =
+                targetCenter;
+
+            target3 =
+                targetCenter + Vector2.down * tileHeight;
+        }
+
+        CheckEnemyAttackPosition(target1);
+        CheckEnemyAttackPosition(target2);
+        CheckEnemyAttackPosition(target3);
+    }
+    private Vector2 GetEnemyAttackDirection()
+    {
+        float xDistance =
+            player.position.x - enemy.transform.position.x;
+
+        float yDistance =
+            player.position.y - enemy.transform.position.y;
+
+        if (Mathf.Abs(xDistance) > Mathf.Abs(yDistance))
+        {
+            if (xDistance > 0)
+                return Vector2.right;
+            else
+                return Vector2.left;
+        }
+        else
+        {
+            if (yDistance > 0)
+                return Vector2.up;
+            else
+                return Vector2.down;
+        }
+    }
+    private void CheckEnemyAttackPosition(Vector2 position)
+    {
+        Vector2 playerPosition = player.position;
+
+        if (Vector2.Distance(playerPosition, position) <= 0.01f)
+        {
+
+            if (playerHP != null)
+            {
+                playerHP.TakeDamage(attackDamage);
+            }
+        }
+    }
 }

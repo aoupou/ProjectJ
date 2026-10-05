@@ -1304,6 +1304,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edb10bd1f98cf9341a82770bb65ec324, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::enemy_movement
+  battle: {fileID: 1731515873}
+  map: {fileID: 241752802}
+  ESize: 0.5
+  player: {fileID: 838436034}
 --- !u!212 &429796454
 SpriteRenderer:
   serializedVersion: 2
@@ -1372,7 +1376,7 @@ Transform:
   m_GameObject: {fileID: 429796452}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.589, y: 0.917, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6914,6 +6918,7 @@ MonoBehaviour:
   mainCamera: {fileID: 519420031}
   attackDamage: 1
   selectweapon: 0
+  enemy: {fileID: 429796453}
   turnUI: {fileID: 956189611}
   currentTurn: 1
   Step: 0
