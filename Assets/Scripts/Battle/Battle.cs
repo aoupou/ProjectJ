@@ -28,7 +28,10 @@ public class Battle : MonoBehaviour
 
 
     public int currentTurn = 1;
-    private List<Vector2Int> cells = new List<Vector2Int>();    public enum Battle_Step
+    // 공격 범위: 플레이어 기준 칸 → 그 칸 데미지
+    private Dictionary<Vector2Int, int> cells = new Dictionary<Vector2Int, int>();
+
+    public enum Battle_Step
     {
         SelectAction = 0,
         SelectDirection,
@@ -255,16 +258,19 @@ public class Battle : MonoBehaviour
     }
     void AttackCells()
     {
-        float tileWidth = playerScript.map.TileWidthSize;
-        float tileHeight = playerScript.map.TileHeightSize;
+        Vector3 enemyPoisiotn = enemy.transform.position;
+        Vector3 playerPoisiotn = player.position;
+        
+        Vector2Int enemyCells = tileColor.WorldTocell(enemyPoisiotn);
+        Vector2Int playerCells = tileColor.WorldTocell(playerPoisiotn);
 
-        foreach (Vector2 cell in cells)
+        Vector2Int enemy_player = enemyCells - playerCells;
+
+        if (cells.TryGetValue(enemy_player, out int damage))
         {
-            Vector2 playerPosition = (Vector2)player.position
-                + new Vector2(cell.x * tileWidth, cell.y * tileHeight);
+            enemyHP.TakeDamage(damage);
         }
-        tileColor.ShowRange(player.position, cells);
-        enemyHP.TakeDamage(attackDamage);
+
     }
 
 
@@ -307,11 +313,15 @@ public class Battle : MonoBehaviour
         cells.Clear();
         foreach (WeaponData weapon in WeaponDatabase.OfType(selectweapon))
         {
-            attackDamage = weapon.damage;
             foreach (Vector2Int cell in weapon.range)
             {
-                Rotate(cell, direction);
-                cells.Add(Rotate(cell, direction));
+                Vector2Int rotated = Rotate(cell, direction);
+
+                // 같은 종류 무기끼리 범위가 겹치면 안 됨 → 무기 데이터 range 다시 설정
+                if (cells.ContainsKey(rotated))
+                    Debug.LogWarning($"[무기] {selectweapon} 범위 겹침: {weapon.name}의 {cell}");
+
+                cells[rotated] = weapon.damage;
             }
         }
         tileColor.ShowRange(player.position, cells);

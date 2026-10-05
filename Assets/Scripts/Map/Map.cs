@@ -1,5 +1,8 @@
 using UnityEngine;
+using TMPro;
 
+// 타일 크기를 Awake에서 계산하니까 Player 등 다른 스크립트 Awake보다 먼저 돌게 함
+[DefaultExecutionOrder(-100)]
 public class Map : MonoBehaviour
 {
     [SerializeField] private MapData mapDataAsset;
@@ -79,10 +82,13 @@ public class Map : MonoBehaviour
                 );
 
                 SpriteRenderer fill = Tile.transform.Find("Fill").GetComponent<SpriteRenderer>();
+                TMP_Text damageText = Tile.transform.Find("DamageText").GetComponent<TMP_Text>();
+
                 fill.color = (x + y) % 2 == 0 ? CheckerColor : Color.clear;
 
                 if (tileColor != null)
-                    tileColor.AddTile(x, y, fill);
+                    tileColor.AddTile(x, y, fill, damageText);
+                    
             }
         }
 
