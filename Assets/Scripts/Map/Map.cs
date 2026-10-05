@@ -52,6 +52,8 @@ public class Map : MonoBehaviour
 
     void Start()
     {
+        change_tile_color tileColor = FindObjectOfType<change_tile_color>();
+
         for (int x = 0; x < mapDataAsset.width; x++)
         {
             for (int y = 0; y < mapDataAsset.height; y++)
@@ -76,9 +78,11 @@ public class Map : MonoBehaviour
                     1
                 );
 
-                // Fill = 칸 안쪽 색 층 (Tile 프리팹 자식). 범위 표시도 여기 색을 바꿔서 함
-                Tile.transform.Find("Fill").GetComponent<SpriteRenderer>().color =
-                    (x + y) % 2 == 0 ? CheckerColor : Color.clear;
+                SpriteRenderer fill = Tile.transform.Find("Fill").GetComponent<SpriteRenderer>();
+                fill.color = (x + y) % 2 == 0 ? CheckerColor : Color.clear;
+
+                if (tileColor != null)
+                    tileColor.AddTile(x, y, fill);
             }
         }
 

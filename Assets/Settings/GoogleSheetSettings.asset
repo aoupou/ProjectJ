@@ -19,3 +19,5 @@ MonoBehaviour:
     url: 
   - dataType: TEsteTEstData
     url: 
+  - dataType: WeaponData
+    url: https://docs.google.com/spreadsheets/d/1qSyeZ49WeJ4J9ESTJ-3yRzjryIuxMQPIrz6ownrB1ww/edit?gid=1709838898#gid=1709838898
