@@ -18,6 +18,7 @@ public class Battle : MonoBehaviour
     [SerializeField] private int attackDamage = 1; // 임시
     [SerializeField] private WeaponType selectweapon;
     [SerializeField] private enemy_movement enemy;
+    private float Pacc = 100, PDodge = 10, Eacc = 100, EDodge = 10; // 임시 순서대로 플레이어 명중, 회피 적 명중, 회피
     public Turn_UI turnUI;
     private Player playerScript;
 
@@ -491,10 +492,23 @@ public class Battle : MonoBehaviour
         if (Vector2.Distance(playerPosition, position) <= 0.01f)
         {
 
-            if (playerHP != null)
+            if (playerHP != null )
             {
-                playerHP.TakeDamage(attackDamage);
+                if (IsDodge(Pacc, EDodge)) // 회피 
+                {
+                    Debug.Log("회피!");
+                }
+                else // 명중
+                {
+                    playerHP.TakeDamage(attackDamage);
+                }
             }
         }
+    }
+    private bool IsDodge(float acc, float dodge) // 회피했는지 판단하는 코드
+    {
+        float dodge_rate = Random.Range(0, 100); 
+        if ( acc - dodge <= dodge_rate) return true;
+        else return false; // {100 - (플레이어 명중 - 적 회피)}% 확률로 회피
     }
 }
