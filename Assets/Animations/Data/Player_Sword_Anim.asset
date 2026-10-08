@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5f9a7fb8489cff47a04fd467fb24e1f, type: 3}
+  m_Name: Player_Sword_Anim
+  m_EditorClassIdentifier: Assembly-CSharp::SpriteAnimationData
+  sprites:
+  - {fileID: 3420634291444954450, guid: 88f95db6ed9f98449bd0f58a7d9fc419, type: 3}
+  - {fileID: 5285529116777346504, guid: 88f95db6ed9f98449bd0f58a7d9fc419, type: 3}
+  - {fileID: -8007083369861303951, guid: 88f95db6ed9f98449bd0f58a7d9fc419, type: 3}
+  - {fileID: -8677156430298115328, guid: 88f95db6ed9f98449bd0f58a7d9fc419, type: 3}
+  - {fileID: -1273803808292900641, guid: 88f95db6ed9f98449bd0f58a7d9fc419, type: 3}
+  - {fileID: -2415442560440856020, guid: 88f95db6ed9f98449bd0f58a7d9fc419, type: 3}
+  - {fileID: 1026435561452068537, guid: 88f95db6ed9f98449bd0f58a7d9fc419, type: 3}
+  - {fileID: 3483654674133067892, guid: 88f95db6ed9f98449bd0f58a7d9fc419, type: 3}
+  - {fileID: 4660939078004214161, guid: 88f95db6ed9f98449bd0f58a7d9fc419, type: 3}
+  - {fileID: -3400979014523172853, guid: 88f95db6ed9f98449bd0f58a7d9fc419, type: 3}
+  framesPerSecond: 14
+  loop: 0
