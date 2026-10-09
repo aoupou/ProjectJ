@@ -15,6 +15,7 @@ using UnityEngine.Networking;
 //
 // 시트 규칙
 //  - 1행은 머리글 (key, itemName, price ...). 열 순서는 상관없음
+//  - 양식 CSV의 2행은 #형식 (int, string ...), 3행은 #설명. key가 #으로 시작해서 가져올 때는 건너뜀
 //  - key = 에셋 파일 이름. 같은 key면 기존 에셋을 고치고, 없으면 새로 만든다
 //  - key가 비었거나 #으로 시작하는 행은 건너뜀 (설명 / 메모용)
 //  - 빈 칸은 값을 바꾸지 않음
@@ -182,6 +183,10 @@ public static class GoogleSheetImporter
 
         AppendCsvLine(csv, new[] { "key", "itemName", "icon", "price", "unlock", "effectType", "value", "concept", "effectText" }
             .Concat(extraFields.Select(f => f.Name)).ToArray());
+        AppendCsvLine(csv, new[] { TypeRowLabel }
+            .Concat(new[] { "itemName", "icon", "price", "unlockStage", "effectType", "value", "concept", "effectText" }
+                .Select(name => TypeName(typeof(ItemData).GetField(name).FieldType)))
+            .Concat(extraFields.Select(f => TypeName(f.FieldType))).ToArray());
         AppendCsvLine(csv, new[] { "#설명: 파일 이름(영문)", "이름", "아이콘 스프라이트 이름", "가격", "상점 해금 (드롭다운)",
                 "효과 (드롭다운)", "효과 수치", "콘셉트 설명", "효과 설명" }
             .Concat(extraFields.Select(Description)).ToArray());
@@ -664,6 +669,7 @@ public static class GoogleSheetImporter
         StringBuilder csv = new StringBuilder();
 
         AppendCsvLine(csv, new[] { "key" }.Concat(fields.Select(f => f.Name)).ToArray());
+        AppendCsvLine(csv, new[] { TypeRowLabel }.Concat(fields.Select(f => TypeName(f.FieldType))).ToArray());
         AppendCsvLine(csv, new[] { keyDescription }.Concat(fields.Select(Description)).ToArray());
 
         IEnumerable<UnityEngine.Object> rows = AssetsInFolder(folder, type).Select(path => AssetDatabase.LoadAssetAtPath(path, type));
@@ -672,6 +678,24 @@ public static class GoogleSheetImporter
             AppendCsvLine(csv, new[] { asset.name }.Concat(fields.Select(f => CellText(f.GetValue(asset)))).ToArray());
 
         return csv.ToString();
+    }
+
+    // 형식 행: 칸의 코드 형식 (int, string, List<Vector2Int> ...)
+    private const string TypeRowLabel = "#형식";
+
+    private static string TypeName(Type type)
+    {
+        Type element = ElementType(type);
+
+        if (element != null)
+            return $"List<{TypeName(element)}>";
+
+        if (type == typeof(int)) return "int";
+        if (type == typeof(float)) return "float";
+        if (type == typeof(double)) return "double";
+        if (type == typeof(bool)) return "bool";
+        if (type == typeof(string)) return "string";
+        return type.Name;
     }
 
     // 설명 행: 툴팁 + 적는 법
