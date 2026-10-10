@@ -18,4 +18,11 @@ public class CharacterData : ScriptableObject
     public Sprite icon;
     [Tooltip("회피 확률 (0 ~ 1)")]
     public float missP;
+
+    [Tooltip("추가 체력")]
+    public int armor;
+    [Tooltip("공격성")]
+    public Aggression aggression;
+    [Tooltip("플레이어와의 거리(칸)")]
+    public int distance;
 }

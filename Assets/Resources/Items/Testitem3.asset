@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Testitem3
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   id: d871f36ee0d1f0d45a0d56e69a9db641
-  itemName: "\uC544\uC789"
+  itemName: "\uC9C0\uC6B0\uAC1C"
   icon: {fileID: 0}
-  concept: "\uC6B0\uC6C5"
-  effectText: "\uC800\uC6C5"
+  concept: "\uC9C0\uC6B0\uAC1C"
+  effectText: "\uC9C0\uC6B0\uAC1C"
   price: 40
   unlockStage: 0
   effectType: 0

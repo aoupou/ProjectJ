@@ -1,0 +1,434 @@
+fileFormatVersion: 2
+guid: a9bde1f9d823fd94d8092c37313f8e9b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8034588207674500346
+    second: woodeffect_spritesheet_0-9_ordered_0
+  - first:
+      213: 8524960358137974517
+    second: woodeffect_spritesheet_0-9_ordered_1
+  - first:
+      213: 3765092241355202582
+    second: woodeffect_spritesheet_0-9_ordered_2
+  - first:
+      213: 1115787762036582535
+    second: woodeffect_spritesheet_0-9_ordered_3
+  - first:
+      213: -4953693834285959881
+    second: woodeffect_spritesheet_0-9_ordered_4
+  - first:
+      213: -3128362532209521008
+    second: woodeffect_spritesheet_0-9_ordered_5
+  - first:
+      213: -95860423191634074
+    second: woodeffect_spritesheet_0-9_ordered_6
+  - first:
+      213: 2118258463479992040
+    second: woodeffect_spritesheet_0-9_ordered_7
+  - first:
+      213: 6623113903746806857
+    second: woodeffect_spritesheet_0-9_ordered_8
+  - first:
+      213: 4030035944980904177
+    second: woodeffect_spritesheet_0-9_ordered_9
+  - first:
+      213: 4541430092111052135
+    second: woodeffect_spritesheet_0-9_ordered_10
+  - first:
+      213: -6851810728981264058
+    second: woodeffect_spritesheet_0-9_ordered_11
+  - first:
+      213: 9176397218053003142
+    second: woodeffect_spritesheet_0-9_ordered_12
+  - first:
+      213: 2486840530718661791
+    second: woodeffect_spritesheet_0-9_ordered_13
+  - first:
+      213: -1613355134111456362
+    second: woodeffect_spritesheet_0-9_ordered_14
+  - first:
+      213: 1486245772814835310
+    second: woodeffect_spritesheet_0-9_ordered_15
+  - first:
+      213: -7034775866180374508
+    second: woodeffect_spritesheet_0-9_ordered_16
+  - first:
+      213: 5867574533628106271
+    second: woodeffect_spritesheet_0-9_ordered_17
+  - first:
+      213: -3466581864720329212
+    second: woodeffect_spritesheet_0-9_ordered_18
+  - first:
+      213: 9117220781750725956
+    second: woodeffect_spritesheet_0-9_ordered_19
+  - first:
+      213: 7003424746844964408
+    second: woodeffect_spritesheet_0-9_ordered_20
+  - first:
+      213: 2027279061267505658
+    second: woodeffect_spritesheet_0-9_ordered_21
+  - first:
+      213: 3150666877303719162
+    second: woodeffect_spritesheet_0-9_ordered_22
+  - first:
+      213: -4480731265869550882
+    second: woodeffect_spritesheet_0-9_ordered_23
+  - first:
+      213: -6722605116453252851
+    second: woodeffect_spritesheet_0-9_ordered_24
+  - first:
+      213: 3596882997384097256
+    second: woodeffect_spritesheet_0-9_ordered_25
+  - first:
+      213: 2045274259739661287
+    second: woodeffect_spritesheet_0-9_ordered_26
+  - first:
+      213: -1276160790498554289
+    second: woodeffect_spritesheet_0-9_ordered_27
+  - first:
+      213: 3011813807293483884
+    second: woodeffect_spritesheet_0-9_ordered_28
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 1050
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: PlayerRealTree_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2048
+        width: 682
+        height: 2048
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 192634ec0f6d000489162fe42d3c2b90
+      internalID: -916242865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerRealTree_1
+      rect:
+        serializedVersion: 2
+        x: 682
+        y: 2048
+        width: 682
+        height: 2048
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 021d2ab03152b9f49972df6e7d29201e
+      internalID: -1369059743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerRealTree_2
+      rect:
+        serializedVersion: 2
+        x: 1364
+        y: 2048
+        width: 682
+        height: 2048
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6fdc4cda3998f6c4aa335e3c8d4f74ad
+      internalID: 15964063
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerRealTree_3
+      rect:
+        serializedVersion: 2
+        x: 2046
+        y: 2048
+        width: 682
+        height: 2048
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 15072efe99eed894390b924fc3347f60
+      internalID: -1766655801
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerRealTree_4
+      rect:
+        serializedVersion: 2
+        x: 2728
+        y: 2048
+        width: 682
+        height: 2048
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8ab2ec04b3f5f4f44bac712adac79f5c
+      internalID: -1526945302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerRealTree_5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 682
+        height: 2048
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 592e34030944a5a4dab58022a9f451c0
+      internalID: 43158970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerRealTree_6
+      rect:
+        serializedVersion: 2
+        x: 682
+        y: 0
+        width: 682
+        height: 2048
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e92efd4bc7aebb40a3dce8e4e60bd21
+      internalID: -783139777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerRealTree_7
+      rect:
+        serializedVersion: 2
+        x: 1364
+        y: 0
+        width: 682
+        height: 2048
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac268d8dc89808f439459dab492fafaa
+      internalID: -1012566347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerRealTree_8
+      rect:
+        serializedVersion: 2
+        x: 2046
+        y: 0
+        width: 682
+        height: 2048
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cde5c464df333e349a2e5dd37fe60914
+      internalID: -741047341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerRealTree_9
+      rect:
+        serializedVersion: 2
+        x: 2728
+        y: 0
+        width: 682
+        height: 2048
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3db2aa2f4051f224b9e70fd3cd8dd200
+      internalID: -1689962048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 70f892a9a1dabea4f887e8d003da8758
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      PlayerRealTree_0: -916242865
+      PlayerRealTree_1: -1369059743
+      PlayerRealTree_2: 15964063
+      PlayerRealTree_3: -1766655801
+      PlayerRealTree_4: -1526945302
+      PlayerRealTree_5: 43158970
+      PlayerRealTree_6: -783139777
+      PlayerRealTree_7: -1012566347
+      PlayerRealTree_8: -741047341
+      PlayerRealTree_9: -1689962048
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

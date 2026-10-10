@@ -18,3 +18,14 @@ MonoBehaviour:
   range:
   - {x: 0, y: 3}
   - {x: 0, y: 4}
+  level: 0
+  hitP: 0
+  weaponRD:
+  - cell: {x: 0, y: 3}
+    damage: 1
+  upgradeP: 0
+  upgradeGold: 0
+  weaponText: 
+  weaponEffects: []
+  vfx: {fileID: 0}
+  icon: {fileID: 0}

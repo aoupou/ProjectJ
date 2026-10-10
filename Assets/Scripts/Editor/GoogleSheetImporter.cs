@@ -381,6 +381,7 @@ public static class GoogleSheetImporter
     //  string / int / long / float / double / bool (TRUE·FALSE, O·X, 1·0)
     //  Vector2 / Vector3 / Vector2Int / Vector3Int ("1, 2" 처럼), Color ("#FF8800" 또는 "#FF880080")
     //  enum (코드 이름 또는 드롭다운 이름), 에셋 / 다른 데이터 (이름으로 찾음)
+    //  ISheetCell을 붙인 struct (AttackCell "(-1,1):3", WeaponEffect "Poison:2")
     //  List / 배열은 칸 하나에 | 로 구분 ("sword | bow")
 
     private static GameDatabaseAttribute Info(Type type)
@@ -405,7 +406,8 @@ public static class GoogleSheetImporter
         return type == typeof(string) || type == typeof(int) || type == typeof(long) || type == typeof(float)
                || type == typeof(double) || type == typeof(bool)
                || type == typeof(Vector2) || type == typeof(Vector3) || type == typeof(Vector2Int) || type == typeof(Vector3Int)
-               || type == typeof(Color) || type.IsEnum || typeof(UnityEngine.Object).IsAssignableFrom(type);
+               || type == typeof(Color) || type.IsEnum || typeof(UnityEngine.Object).IsAssignableFrom(type)
+               || typeof(ISheetCell).IsAssignableFrom(type);
     }
 
     // List<T> / T[]면 T, 아니면 null
@@ -651,6 +653,17 @@ public static class GoogleSheetImporter
             return value != null;
         }
 
+        if (typeof(ISheetCell).IsAssignableFrom(type))
+        {
+            ISheetCell cell = (ISheetCell)Activator.CreateInstance(type);
+
+            if (!cell.TryParse(s, out error))
+                return false;
+
+            value = cell;
+            return true;
+        }
+
         if (error == null)
             error = $"'{s}'는 {type.Name}(으)로 못 읽음";
 
@@ -743,6 +756,7 @@ public static class GoogleSheetImporter
             case Vector3Int v: return $"{v.x}, {v.y}, {v.z}";
             case Color c: return "#" + (c.a < 1f ? ColorUtility.ToHtmlStringRGBA(c) : ColorUtility.ToHtmlStringRGB(c));
             case System.Enum e: return EnumLabel(e);
+            case ISheetCell cell: return cell.ToCellText();
             case System.Collections.IList list: return string.Join(" | ", list.Cast<object>().Select(CellText));
             default: return Convert.ToString(value, inv);
         }

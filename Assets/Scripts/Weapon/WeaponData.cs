@@ -17,4 +17,22 @@ public class WeaponData : ScriptableObject
     public int damage;
     [Tooltip("공격 범위 칸")]
     public List<Vector2Int> range = new List<Vector2Int>();
+    [Tooltip("무기 강화 단계")]
+    public int level;
+    [Tooltip("명중률 (0~100)")]
+    public int hitP;
+    [Tooltip("공격 칸 / 칸마다 데미지")]
+    public List<AttackCell> weaponRD = new List<AttackCell>();
+    [Tooltip("강화 성공 확률 (0~100)")]
+    public int upgradeP;
+    [Tooltip("강화 소모 골드")]
+    public int upgradeGold;
+    [Tooltip("무기 설명")]
+    public string weaponText;
+    [Tooltip("무기 효과 / 수치")]
+    public List<WeaponEffect> weaponEffects = new List<WeaponEffect>();
+    [Tooltip("공격 이펙트")]
+    public GameObject vfx;
+    [Tooltip("무기 아이콘")]
+    public Sprite icon;
 }
