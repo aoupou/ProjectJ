@@ -44,7 +44,8 @@ public class enemy_movement : MonoBehaviour
     }
     private void Attack()
     {
-        battle.EnemyAttack();
+        // TODO: 새 Battle에 적 공격 들어오면 연결 (예전 코드는 Heritage/Old_Battle.cs의 EnemyAttack)
+        // battle.EnemyAttack();
     }
     private Vector2 ChasePlayer()
     {

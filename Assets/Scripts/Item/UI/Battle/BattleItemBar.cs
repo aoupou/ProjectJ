@@ -17,16 +17,16 @@ public class BattleItemBar : MonoBehaviour
     private readonly bool[] used = new bool[Inventory.SlotCount];
     private int selected = -1;
 
-    // 턴이 바뀌었는지 확인용 (Battle.currentTurn이 바뀌면 턴 종료)
+    // 턴이 바뀌었는지 확인용 (다른 단계 → SelectAction으로 돌아오면 턴 종료)
     private Battle battle;
-    private int lastTurn;
+    private Battle.Battle_Step lastStep;
 
     private void Start()
     {
         ItemEffects.ResetBattle();
 
         battle = FindAnyObjectByType<Battle>();
-        lastTurn = battle != null ? battle.currentTurn : 0;
+        lastStep = battle != null ? battle.CurrentStep : Battle.Battle_Step.SelectAction;
 
         // 자식 중 Item_1, Item_2, Item_3 순서로 슬롯 연결
         for (int i = 0; i < Inventory.SlotCount; i++)
@@ -58,11 +58,13 @@ public class BattleItemBar : MonoBehaviour
     private void Update()
     {
         // 턴이 넘어가면 이번 턴 효과(이동 +N 등) 초기화
-        // (이동이 끝날 때도, 공격이 끝날 때도 Battle.currentTurn이 올라감)
-        if (battle != null && battle.currentTurn != lastTurn)
+        // (새 Battle은 TurnEnd → SelectAction을 한 프레임에 바꿔서 TurnEnd는 못 잡음)
+        if (battle != null && battle.CurrentStep != lastStep)
         {
-            lastTurn = battle.currentTurn;
-            ItemEffects.OnTurnEnd();
+            if (battle.CurrentStep == Battle.Battle_Step.SelectAction)
+                ItemEffects.OnTurnEnd();
+
+            lastStep = battle.CurrentStep;
         }
 
         Keyboard keyboard = Keyboard.current;

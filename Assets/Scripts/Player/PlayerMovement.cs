@@ -118,7 +118,7 @@ public class Player : MonoBehaviour
 
     public void OnMoveUp(InputValue value) // 이거 공격으로도 쓸 수 있을 듯 싶긴한데 나중에 차차 생각해보기
     {
-        if (battle.Step != Battle_Step.SelectDirection)
+        if (battle.CurrentStep != Battle_Step.SelectDirection)
             return;
 
         if (isMoving)
@@ -133,7 +133,7 @@ public class Player : MonoBehaviour
 
     public void OnMoveDown(InputValue value)
     {
-        if (battle.Step != Battle_Step.SelectDirection)
+        if (battle.CurrentStep != Battle_Step.SelectDirection)
             return;
 
         if (isMoving)
@@ -148,7 +148,7 @@ public class Player : MonoBehaviour
 
     public void OnMoveLeft(InputValue value)
     {
-        if (battle.Step != Battle_Step.SelectDirection)
+        if (battle.CurrentStep != Battle_Step.SelectDirection)
             return;
 
         if (isMoving)
@@ -165,7 +165,7 @@ public class Player : MonoBehaviour
 
     public void OnMoveRight(InputValue value)
     {
-        if (battle.Step != Battle_Step.SelectDirection)
+        if (battle.CurrentStep != Battle_Step.SelectDirection)
             return;
 
         if (isMoving)

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5f9a7fb8489cff47a04fd467fb24e1f, type: 3}
+  m_Name: PlayerGunShot
+  m_EditorClassIdentifier: Assembly-CSharp::SpriteAnimationData
+  sprites:
+  - {fileID: -8520051080007432020, guid: 9f46ab4982856074d88279642ad64592, type: 3}
+  - {fileID: 562949336096417287, guid: 9f46ab4982856074d88279642ad64592, type: 3}
+  - {fileID: 8963340287561101008, guid: 9f46ab4982856074d88279642ad64592, type: 3}
+  - {fileID: -8043771232181158850, guid: 9f46ab4982856074d88279642ad64592, type: 3}
+  - {fileID: 1118257758841899446, guid: 9f46ab4982856074d88279642ad64592, type: 3}
+  - {fileID: -8419253286486682768, guid: 9f46ab4982856074d88279642ad64592, type: 3}
+  - {fileID: -5549221104825192369, guid: 9f46ab4982856074d88279642ad64592, type: 3}
+  framesPerSecond: 14
+  loop: 1
