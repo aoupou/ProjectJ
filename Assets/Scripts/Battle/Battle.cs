@@ -6,6 +6,17 @@ public class Battle : MonoBehaviour
     [SerializeField] private Map map;
     [SerializeField] private GameObject ActionUI;
     [SerializeField] private GameObject WeaponUI;
+
+    CharacterData playerRangeData;
+    public int moverange;
+
+    public void Moverange()
+    {
+        playerRangeData = CharacterDatabase.Get(CharacterDatabase.PlayerKey);
+        moverange = playerRangeData.moveRange;
+    }
+
+    public int chooseMove = 0;
     public enum Battle_Step
     {
         SelectAction = 0, // 행동 선택
@@ -31,6 +42,7 @@ public class Battle : MonoBehaviour
     {
         HideActionUI();
         ChangeStep(Battle_Step .SelectDirection);
+        chooseMove = 1;
         // 배틀 프리뷰의 이동위치 보는 코드와 연결
     }
     public void Move_Player(int direction) // 배틀 프리뷰에서 이동위치 1,2,3,4 로 받음
@@ -113,4 +125,5 @@ public class Battle : MonoBehaviour
     {
         currentStep = nextStep;
     }
+
 }
