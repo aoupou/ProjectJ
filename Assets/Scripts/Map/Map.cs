@@ -55,7 +55,7 @@ public class Map : MonoBehaviour
 
     void Start()
     {
-        change_tile_color tileColor = FindObjectOfType<change_tile_color>();
+        BattlePreview tileColor = FindObjectOfType<BattlePreview>();
 
         for (int x = 0; x < mapDataAsset.width; x++)
         {

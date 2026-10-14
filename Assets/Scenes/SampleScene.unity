@@ -8055,7 +8055,6 @@ GameObject:
   - component: {fileID: 1731515872}
   - component: {fileID: 1731515873}
   - component: {fileID: 1731515874}
-  - component: {fileID: 1731515875}
   - component: {fileID: 1731515876}
   - component: {fileID: 1731515877}
   m_Layer: 0
@@ -8119,20 +8118,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Stage_change
   stg_num: 14
---- !u!114 &1731515875
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1731515871}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b9dba376c76758641abf911cbbf2c0e0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::change_tile_color
-  map: {fileID: 241752802}
-  attackRangeColor: {r: 0.9433962, g: 0.6452474, b: 0.6452474, a: 0.43137255}
 --- !u!114 &1731515876
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8149,6 +8134,8 @@ MonoBehaviour:
   map: {fileID: 241752802}
   ActionUI: {fileID: 1801941143}
   WeaponUI: {fileID: 1485724595}
+  mapsponerTransform: {fileID: 762981257}
+  battlePreview: {fileID: 1731515877}
   moverange: 0
   chooseMove: 0
   currentStep: 0
@@ -8164,9 +8151,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3e66db050922b24196b0d222106b130, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BattlePreview
-  Battle: {fileID: 1731515876}
-  Map: {fileID: 241752802}
-  movePreview: {r: 0.5962029, g: 1, b: 0.4481132, a: 0}
+  battle: {fileID: 1731515876}
+  map: {fileID: 241752802}
+  movePreviewColor: {r: 0.2971698, g: 1, b: 0.7315023, a: 1}
 --- !u!1 &1735612260
 GameObject:
   m_ObjectHideFlags: 0

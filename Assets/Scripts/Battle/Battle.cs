@@ -6,14 +6,20 @@ public class Battle : MonoBehaviour
     [SerializeField] private Map map;
     [SerializeField] private GameObject ActionUI;
     [SerializeField] private GameObject WeaponUI;
+    [SerializeField] private Transform mapsponerTransform;
+    [SerializeField] private BattlePreview battlePreview;
 
     CharacterData playerRangeData;
     public int moverange;
-
-    public void Moverange()
+    public void Awake()
+    {
+        Moverange(); 
+    }
+    public int Moverange()
     {
         playerRangeData = CharacterDatabase.Get(CharacterDatabase.PlayerKey);
         moverange = playerRangeData.moveRange;
+        return moverange;
     }
 
     public int chooseMove = 0;
@@ -29,7 +35,7 @@ public class Battle : MonoBehaviour
     public Battle_Step CurrentStep => currentStep;
     private void Start()
     {
-        ChangeStep(Battle_Step .SelectAction);
+        ChangeStep(Battle_Step.SelectAction);
         SelectAction();
     }
     private void SelectAction() // 행동 UI 활성화
@@ -41,8 +47,8 @@ public class Battle : MonoBehaviour
     public void Choose_Move()
     {
         HideActionUI();
-        ChangeStep(Battle_Step .SelectDirection);
-        chooseMove = 1;
+        battlePreview.PlayerMove();
+        ChangeStep(Battle_Step.SelectDirection);
         // 배틀 프리뷰의 이동위치 보는 코드와 연결
     }
     public void Move_Player(int direction) // 배틀 프리뷰에서 이동위치 1,2,3,4 로 받음
@@ -88,6 +94,37 @@ public class Battle : MonoBehaviour
 
         ChangeStep(Battle_Step.SelectAction);
         SelectAction();
+    }
+
+    public Vector2Int OnPlayer()
+    {
+        if (playerTransform == null || map == null) 
+            return new Vector2Int(-1,-1);
+
+        float playerPoisionX = playerTransform.position.x;
+        float playerPoisonY = playerTransform.position.y;
+
+        float mapStartX = map.MapStartX;
+        float mapStartY = map.MapStartY;
+
+        float mapWidthSize = map.TileWidthSize;
+        float mapHeightSize = map.TileHeightSize;
+
+        float playerOnMapspownrX = playerPoisionX - mapStartX ;
+        float playerOnMapspownrY = playerPoisonY - mapStartY;
+
+        float playerOnTileFloatX =  playerOnMapspownrX / mapWidthSize;
+        float playerOnTileFloatY =  playerOnMapspownrY / mapHeightSize;
+
+        int playerOnTileIntX = (int)playerOnTileFloatX;
+        int playerOnTileIntY = (int)playerOnTileFloatY;
+
+        //Debug.Log("(" + playerOnTileIntX + ","+ playerOnTileIntY + ")"); 
+
+        return new Vector2Int(playerOnTileIntX,playerOnTileIntY);
+        //오늘의 목표 
+        //1. 플레이어의 위치 값 받아오기 
+        //2. 플레이어의 위치 값을 타일 값으로 바꾸기
     }
     private void ShowActionUI()
     {

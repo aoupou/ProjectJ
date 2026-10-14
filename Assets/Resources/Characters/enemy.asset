@@ -14,4 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterData
   displayName: "\uC801"
   hp: 10
-  attack: 1
+  maxHp: 0
+  moveRange: 0
+  icon: {fileID: 0}
+  missP: 0
+  armor: 0
+  aggression: 5
+  distance: 0
