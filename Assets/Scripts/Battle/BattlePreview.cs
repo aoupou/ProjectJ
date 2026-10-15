@@ -70,13 +70,13 @@ public class BattlePreview : MonoBehaviour
 
         ResetPreviewColors();
 
-        int playerX = map.PlayerTileX;
-        int playerY = map.PlayerTileY;
-
-        Paint(playerX + 1, playerY); // 오른쪽
-        Paint(playerX - 1, playerY); // 왼쪽
-        Paint(playerX, playerY + 1); // 위쪽
-        Paint(playerX, playerY - 1); // 아래쪽
+        var playerX = map.PlayerTileX;
+        var playerY = map.PlayerTileY;
+        var PlayerMovePower = battle.Moverange();
+        Paint(playerX + PlayerMovePower, playerY); // 오른쪽
+        Paint(playerX - PlayerMovePower, playerY); // 왼쪽
+        Paint(playerX, playerY + PlayerMovePower); // 위쪽
+        Paint(playerX, playerY - PlayerMovePower); // 아래쪽
     }
 
     public void AddTile(
