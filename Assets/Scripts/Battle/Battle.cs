@@ -8,21 +8,10 @@ public class Battle : MonoBehaviour
     [SerializeField] private GameObject WeaponUI;
     [SerializeField] private Transform mapsponerTransform;
     [SerializeField] private BattlePreview battlePreview;
-
-    CharacterData playerRangeData;
+    [SerializeField] private Battle_Step currentStep = Battle_Step.SelectAction;
+    public Battle_Step CurrentStep => currentStep;
     public int moverange;
-    public void Awake()
-    {
-        Moverange(); 
-    }
-    public int Moverange()
-    {
-        playerRangeData = CharacterDatabase.Get(CharacterDatabase.PlayerKey);
-        moverange = playerRangeData.moveRange;
-        return moverange;
-    }
-
-    public int chooseMove = 0;
+    CharacterData playerRangeData;
     public enum Battle_Step
     {
         SelectAction = 0, // 행동 선택
@@ -31,8 +20,10 @@ public class Battle : MonoBehaviour
         SelectAttack, // 공격 방식 선택
         TurnEnd // 턴 종료
     }
-    [SerializeField] private Battle_Step currentStep = Battle_Step.SelectAction;
-    public Battle_Step CurrentStep => currentStep;
+    public void Awake()
+    {
+        Moverange();
+    }
     private void Start()
     {
         ChangeStep(Battle_Step.SelectAction);
@@ -47,8 +38,8 @@ public class Battle : MonoBehaviour
     public void Choose_Move()
     {
         HideActionUI();
-        battlePreview.PlayerMove();
         ChangeStep(Battle_Step.SelectDirection);
+        battlePreview.PlayerMove();
         // 배틀 프리뷰의 이동위치 보는 코드와 연결
     }
     public void Move_Player(int direction) // 배틀 프리뷰에서 이동위치 1,2,3,4 로 받음
@@ -95,37 +86,6 @@ public class Battle : MonoBehaviour
         ChangeStep(Battle_Step.SelectAction);
         SelectAction();
     }
-
-    public Vector2Int OnPlayer()
-    {
-        if (playerTransform == null || map == null) 
-            return new Vector2Int(-1,-1);
-
-        float playerPoisionX = playerTransform.position.x;
-        float playerPoisonY = playerTransform.position.y;
-
-        float mapStartX = map.MapStartX;
-        float mapStartY = map.MapStartY;
-
-        float mapWidthSize = map.TileWidthSize;
-        float mapHeightSize = map.TileHeightSize;
-
-        float playerOnMapspownrX = playerPoisionX - mapStartX ;
-        float playerOnMapspownrY = playerPoisonY - mapStartY;
-
-        float playerOnTileFloatX =  playerOnMapspownrX / mapWidthSize;
-        float playerOnTileFloatY =  playerOnMapspownrY / mapHeightSize;
-
-        int playerOnTileIntX = (int)playerOnTileFloatX;
-        int playerOnTileIntY = (int)playerOnTileFloatY;
-
-        //Debug.Log("(" + playerOnTileIntX + ","+ playerOnTileIntY + ")"); 
-
-        return new Vector2Int(playerOnTileIntX,playerOnTileIntY);
-        //오늘의 목표 
-        //1. 플레이어의 위치 값 받아오기 
-        //2. 플레이어의 위치 값을 타일 값으로 바꾸기
-    }
     private void ShowActionUI()
     {
         ActionUI.SetActive(true);
@@ -162,5 +122,10 @@ public class Battle : MonoBehaviour
     {
         currentStep = nextStep;
     }
-
+    public int Moverange()
+    {
+        playerRangeData = CharacterDatabase.Get(CharacterDatabase.PlayerKey);
+        moverange = playerRangeData.moveRange;
+        return moverange;
+    }
 }

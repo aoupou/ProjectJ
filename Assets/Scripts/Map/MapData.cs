@@ -7,9 +7,14 @@ public class MapData : ScriptableObject
     public int width;
     public int height;
     public List<TileData> tiles;
-    public void GenerateTiles() // 리스트 하나하나 추가하기 귀찮은 사람을 위한 기능
+
+    // 설정한 가로·세로 크기에 맞춰 타일 데이터를 생성
+    public void GenerateTiles()
     {
-        tiles.Clear();
+        if (tiles == null)
+            tiles = new List<TileData>();
+        else
+            tiles.Clear();
 
         for (int y = 0; y < height; y++)
         {
@@ -24,4 +29,3 @@ public class MapData : ScriptableObject
         }
     }
 }
-

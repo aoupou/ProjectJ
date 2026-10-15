@@ -1,128 +1,355 @@
 using UnityEngine;
 using TMPro;
+using System.Collections.Generic;
 
-// 타일 크기를 Awake에서 계산하니까 Player 등 다른 스크립트 Awake보다 먼저 돌게 함
 [DefaultExecutionOrder(-100)]
 public class Map : MonoBehaviour
 {
     [SerializeField] private MapData mapDataAsset;
-    private TileData[,] mapData; 
+
+    private TileData[,] mapData;
+
     public GameObject MapSize;
-    public int Width => mapDataAsset.width;
-    public int Height => mapDataAsset.height;
+    public GameObject TilePrefab;
 
     public float TileWidthSize;
     public float TileHeightSize;
 
-    public float MapStartX = 0;
-    public float MapStartY = 0;
+    public float MapStartX;
+    public float MapStartY;
 
-    public GameObject TilePrefab;
+    private int playerTileX = -1;
+    private int playerTileY = -1;
+    private bool hasPlayerTile;
 
-    // 체스판 무늬 색 (한 칸 건너 연하게 칠함). 범위 표시를 끌 때도 이 색으로 돌려놓기
+    public int PlayerTileX => playerTileX;
+    public int PlayerTileY => playerTileY;
+    public bool HasPlayerTile => hasPlayerTile;
+
+    private BattlePreview tileColor;
+
+    // 타일 콜라이더로 해당 타일의 데이터를 찾음
+    private Dictionary<Collider2D, TileData> tileDataByCollider =
+        new Dictionary<Collider2D, TileData>();
+
     public Color CheckerColor = new Color(0.25f, 0.25f, 0.3f, 0.07f);
-
-    // 게임판 바깥 테두리 (안쪽 선보다 굵고 진하게)
     public Color FrameColor = new Color(0.2f, 0.2f, 0.25f, 0.9f);
     public float FrameThickness = 0.08f;
 
+    public int Width => mapDataAsset.width;
+    public int Height => mapDataAsset.height;
+
     private void Awake()
     {
-        int width = mapDataAsset.width; // 맵 데이터에서 너비와 높이를 가져옴
+        if (mapDataAsset == null || MapSize == null)
+        {
+            Debug.LogError("MapData 또는 MapSize가 지정되지 않았습니다.");
+            enabled = false;
+            return;
+        }
+
+        int width = mapDataAsset.width;
         int height = mapDataAsset.height;
 
-        TileWidthSize = MapSize.transform.localScale.x / width;
-        TileHeightSize = MapSize.transform.localScale.y/ height;
+        if (width <= 0 || height <= 0)
+        {
+            Debug.LogError("맵의 가로와 세로 크기는 1 이상이어야 합니다.");
+            enabled = false;
+            return;
+        }
 
-        MapStartX = MapSize.transform.position.x
-            - MapSize.transform.localScale.x / 2;
-        
-        MapStartY = MapSize.transform.position.y
-            - MapSize.transform.localScale.y / 2;
+        TileWidthSize = MapSize.transform.localScale.x / width;
+        TileHeightSize = MapSize.transform.localScale.y / height;
+
+        MapStartX =
+            MapSize.transform.position.x - MapSize.transform.localScale.x / 2f;
+
+        MapStartY =
+            MapSize.transform.position.y - MapSize.transform.localScale.y / 2f;
 
         mapData = new TileData[width, height];
-       
-        foreach (TileData tileData in mapDataAsset.tiles) // 타일데이터에 타일 좌표들을 저장
+
+        // MapData 에셋의 타일 데이터를 런타임 배열로 복사
+        if (mapDataAsset.tiles != null)
         {
-            mapData[tileData.x, tileData.y] = tileData;
-        } 
-
-        // 스포너는 에디터에서 범위 잡는 용도라 게임 시작하면 안 보이게 (위치·크기 값은 그대로 씀)
-        SpriteRenderer spawnerRenderer = MapSize.GetComponent<SpriteRenderer>();
-        if (spawnerRenderer != null)
-            spawnerRenderer.enabled = false;
-    }
-
-    void Start()
-    {
-        BattlePreview tileColor = FindObjectOfType<BattlePreview>();
-
-        for (int x = 0; x < mapDataAsset.width; x++)
-        {
-            for (int y = 0; y < mapDataAsset.height; y++)
+            foreach (TileData source in mapDataAsset.tiles)
             {
-                GameObject Tile = Instantiate(TilePrefab);
+                if (source == null)
+                    continue;
 
-                Tile.transform.localScale = new Vector3(
-                    TileWidthSize,
-                    TileHeightSize,
-                    1
-                );
+                if (source.x < 0 || source.x >= width ||
+                    source.y < 0 || source.y >= height)
+                {
+                    Debug.LogWarning(
+                        $"잘못된 타일 좌표입니다: ({source.x}, {source.y})"
+                    );
+                    continue;
+                }
 
-                Tile.transform.position = new Vector3(
-                    MapStartX
-                    + (TileWidthSize / 2)
-                    + (TileWidthSize * x),
+                mapData[source.x, source.y] = new TileData
+                {
+                    x = source.x,
+                    y = source.y,
 
-                    MapStartY
-                    + (TileHeightSize / 2)
-                    + (TileHeightSize * y),
+                    // 플레이어 시작 위치는 아래에서 무작위로 지정
+                    OnPlayer = false,
 
-                    1
-                );
-
-                SpriteRenderer fill = Tile.transform.Find("Fill").GetComponent<SpriteRenderer>();
-                TMP_Text damageText = Tile.transform.Find("DamageText").GetComponent<TMP_Text>();
-
-                fill.color = (x + y) % 2 == 0 ? CheckerColor : Color.clear;
-
-                if (tileColor != null)
-                    tileColor.AddTile(x, y, fill, damageText);
-                    
+                    // 기존 적 위치 정보는 유지
+                    OnEnemy = source.OnEnemy
+                };
             }
         }
 
+        // 플레이어가 배치될 타일의 x, y를 무작위로 선택
+        if (TryGetRandomPlayerTile(out int startX, out int startY))
+        {
+            SetPlayerTile(startX, startY);
+        }
+        else
+        {
+            Debug.LogError("플레이어를 배치할 수 있는 타일이 없습니다.");
+        }
+
+        // 맵 크기 지정용 오브젝트를 게임 중 숨김
+        SpriteRenderer mapSizeRenderer =
+            MapSize.GetComponent<SpriteRenderer>();
+
+        if (mapSizeRenderer != null)
+            mapSizeRenderer.enabled = false;
+    }
+
+    private void Start()
+    {
+        if (TilePrefab == null)
+        {
+            Debug.LogError("TilePrefab이 지정되지 않았습니다.");
+            return;
+        }
+
+        tileColor = FindObjectOfType<BattlePreview>();
+
+        CreateTiles();
         CreateFrame();
     }
 
-    // 게임판 바깥에 굵은 선 4개(위·아래·왼쪽·오른쪽)를 그림
-    // 타일의 Fill(흰 사각형) 그림을 가져다가 길쭉하게 늘려서 씀
-    void CreateFrame()
+    // 실제 배열에 존재하는 타일 중 하나를 무작위로 선택
+    private bool TryGetRandomPlayerTile(out int x, out int y)
     {
-        SpriteRenderer fill = TilePrefab.transform.Find("Fill").GetComponent<SpriteRenderer>();
+        x = -1;
+        y = -1;
+
+        List<TileData> availableTiles = new List<TileData>();
+
+        for (int tileX = 0; tileX < Width; tileX++)
+        {
+            for (int tileY = 0; tileY < Height; tileY++)
+            {
+                if (mapData[tileX, tileY] != null)
+                    availableTiles.Add(mapData[tileX, tileY]);
+            }
+        }
+
+        if (availableTiles.Count == 0)
+            return false;
+
+        TileData selectedTile =
+            availableTiles[Random.Range(0, availableTiles.Count)];
+
+        x = selectedTile.x;
+        y = selectedTile.y;
+        return true;
+    }
+
+    // 플레이어 타일 좌표와 OnPlayer 표시를 함께 갱신
+    public bool SetPlayerTile(int newX, int newY)
+    {
+        if (!IsValidTile(newX, newY))
+            return false;
+
+        if (hasPlayerTile)
+            mapData[playerTileX, playerTileY].OnPlayer = false;
+
+        playerTileX = newX;
+        playerTileY = newY;
+
+        mapData[playerTileX, playerTileY].OnPlayer = true;
+        hasPlayerTile = true;
+
+        return true;
+    }
+
+    private bool IsValidTile(int x, int y)
+    {
+        return mapData != null &&
+               x >= 0 && x < Width &&
+               y >= 0 && y < Height &&
+               mapData[x, y] != null;
+    }
+
+    private void CreateTiles()
+    {
+        for (int x = 0; x < Width; x++)
+        {
+            for (int y = 0; y < Height; y++)
+            {
+                if (mapData[x, y] != null)
+                    CreateTile(x, y);
+            }
+        }
+    }
+
+    private void CreateTile(int x, int y)
+    {
+        GameObject tile = Instantiate(TilePrefab);
+
+        SetTileTransform(tile.transform, x, y);
+        RegisterTileCoordinate(tile, x, y);
+        SetupTileVisuals(tile, x, y);
+    }
+
+    // 타일을 배치하면서 월드 좌표를 해당 TileData에 저장
+    private void SetTileTransform(Transform tileTransform, int x, int y)
+    {
+        tileTransform.localScale = new Vector3(
+            TileWidthSize,
+            TileHeightSize,
+            1f
+        );
+
+        Vector3 worldPosition = new Vector3(
+            MapStartX + TileWidthSize * (x + 0.5f),
+            MapStartY + TileHeightSize * (y + 0.5f),
+            1f
+        );
+
+        tileTransform.position = worldPosition;
+        mapData[x, y].worldPosition = worldPosition;
+    }
+
+    private void RegisterTileCoordinate(GameObject tile, int x, int y)
+    {
+        Collider2D tileCollider = tile.GetComponent<Collider2D>();
+
+        if (tileCollider == null)
+        {
+            Debug.LogError($"타일 ({x}, {y})에 Collider2D가 없습니다.");
+            return;
+        }
+
+        tileDataByCollider[tileCollider] = mapData[x, y];
+    }
+
+    private void SetupTileVisuals(GameObject tile, int x, int y)
+    {
+        SpriteRenderer fill =
+            tile.transform.Find("Fill").GetComponent<SpriteRenderer>();
+
+        TMP_Text damageText =
+            tile.transform.Find("DamageText").GetComponent<TMP_Text>();
+
+        fill.color = (x + y) % 2 == 0
+            ? CheckerColor
+            : Color.clear;
+
+        if (tileColor != null)
+            tileColor.AddTile(x, y, fill, damageText);
+    }
+
+    // 콜라이더에 해당하는 타일의 x, y를 반환
+    public bool TryGetTileCoordinate(
+        Collider2D tileCollider,
+        out int x,
+        out int y)
+    {
+        x = -1;
+        y = -1;
+
+        if (!tileDataByCollider.TryGetValue(tileCollider, out TileData tile))
+            return false;
+
+        x = tile.x;
+        y = tile.y;
+        return true;
+    }
+
+    // 저장된 타일 월드 좌표를 가져옴
+    public bool TryGetTileWorldPosition(
+        int x,
+        int y,
+        out Vector3 worldPosition)
+    {
+        worldPosition = Vector3.zero;
+
+        if (!IsValidTile(x, y))
+            return false;
+
+        worldPosition = mapData[x, y].worldPosition;
+        return true;
+    }
+
+    // 플레이어 타일의 월드 좌표를 가져옴
+    public bool TryGetPlayerWorldPosition(out Vector3 worldPosition)
+    {
+        return TryGetTileWorldPosition(
+            playerTileX,
+            playerTileY,
+            out worldPosition
+        );
+    }
+
+    private void CreateFrame()
+    {
+        SpriteRenderer fill =
+            TilePrefab.transform.Find("Fill").GetComponent<SpriteRenderer>();
 
         float width = MapSize.transform.localScale.x;
         float height = MapSize.transform.localScale.y;
-        float centerX = MapStartX + width / 2;
-        float centerY = MapStartY + height / 2;
 
-        // 가로 선은 두께만큼 더 길게 해서 모서리가 비지 않게
-        CreateFrameLine(fill, new Vector2(centerX, MapStartY), new Vector2(width + FrameThickness, FrameThickness));          // 아래
-        CreateFrameLine(fill, new Vector2(centerX, MapStartY + height), new Vector2(width + FrameThickness, FrameThickness)); // 위
-        CreateFrameLine(fill, new Vector2(MapStartX, centerY), new Vector2(FrameThickness, height));                        // 왼쪽
-        CreateFrameLine(fill, new Vector2(MapStartX + width, centerY), new Vector2(FrameThickness, height));                // 오른쪽
+        float centerX = MapStartX + width / 2f;
+        float centerY = MapStartY + height / 2f;
+
+        CreateFrameLine(
+            fill,
+            new Vector2(centerX, MapStartY),
+            new Vector2(width + FrameThickness, FrameThickness)
+        );
+
+        CreateFrameLine(
+            fill,
+            new Vector2(centerX, MapStartY + height),
+            new Vector2(width + FrameThickness, FrameThickness)
+        );
+
+        CreateFrameLine(
+            fill,
+            new Vector2(MapStartX, centerY),
+            new Vector2(FrameThickness, height)
+        );
+
+        CreateFrameLine(
+            fill,
+            new Vector2(MapStartX + width, centerY),
+            new Vector2(FrameThickness, height)
+        );
     }
 
-    void CreateFrameLine(SpriteRenderer fill, Vector2 position, Vector2 size)
+    private void CreateFrameLine(
+        SpriteRenderer fill,
+        Vector2 position,
+        Vector2 size)
     {
         GameObject line = new GameObject("BoardFrame");
-        line.transform.position = new Vector3(position.x, position.y, 1);
-        line.transform.localScale = new Vector3(size.x, size.y, 1);
+
+        line.transform.position =
+            new Vector3(position.x, position.y, 1f);
+
+        line.transform.localScale =
+            new Vector3(size.x, size.y, 1f);
 
         SpriteRenderer renderer = line.AddComponent<SpriteRenderer>();
         renderer.sprite = fill.sprite;
         renderer.sharedMaterial = fill.sharedMaterial;
         renderer.color = FrameColor;
-        renderer.sortingOrder = 2; // 타일 선(1)보다 위
+        renderer.sortingOrder = 2;
     }
 }

@@ -2,13 +2,14 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.LightTransport;
 using static Battle;
 
 public class Player : MonoBehaviour
 {
     public Battle battle;
     public Map map;
-
+    [SerializeField] private Vector2 positionInTile = new Vector2(0.5f, 0.5f);
     public float PlayerSize;
     [SerializeField] private AudioClip moveInSound;  // 마법진으로 들어갈 때
     [SerializeField] private AudioClip moveOutSound; // 마법진에서 나올 때
@@ -35,12 +36,12 @@ public class Player : MonoBehaviour
         audioSource.playOnAwake = false;
 
         SetSize();      // 플레이어 크기 설정
-        SetPosition();  // 플레이어 위치 설정
     }
 
     private void Start()
     {
         animator.SetState("Idle", true);
+        SetPosition();  // 플레이어 위치 설정
     }
 
     private void SetSize()
@@ -54,22 +55,20 @@ public class Player : MonoBehaviour
 
     private void SetPosition()
     {
-        // 맵의 타일 중 하나를 무작위로 선택하여 플레이어의 위치를 설정
-        int random_x = UnityEngine.Random.Range(0, map.Width);
-        int random_y = UnityEngine.Random.Range(0, map.Height);
+        if (!map.HasPlayerTile)
+        {
+            Debug.LogError("Map에 플레이어 시작 타일이 없습니다.");
+            return;
+        }
 
-        float player_x =
-            map.MapStartX
-            + (map.TileWidthSize / 2)
-            + (map.TileWidthSize * random_x);
+        if (!map.TryGetPlayerWorldPosition(out Vector3 worldPosition))
+        {
+            Debug.LogError("플레이어 타일의 월드 좌표를 가져오지 못했습니다.");
+            return;
+        }
 
-        float player_y =
-            map.MapStartY
-            + (map.TileHeightSize / 2)
-            + (map.TileHeightSize * random_y);
-
-        transform.position =
-            new Vector3(player_x, player_y, 1);
+        worldPosition += new Vector3(positionInTile.x, positionInTile.y, 0f);
+        transform.position = worldPosition;
     }
 
     public void MoveUp()
