@@ -4410,8 +4410,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Player
   battle: {fileID: 0}
   map: {fileID: 241752802}
-  positionInTile: {x: 0, y: 1}
-  PlayerSize: 2
+  positionInTile: {x: 0, y: 0}
+  PlayerSize: 1
   moveInSound: {fileID: 8300000, guid: 9ea7978f56fd37645932ece877843c14, type: 3}
   moveOutSound: {fileID: 8300000, guid: 9ea7978f56fd37645932ece877843c14, type: 3}
   moveVolume: 1
@@ -8223,7 +8223,7 @@ MonoBehaviour:
     m_Bits: 64
   battle: {fileID: 1731515876}
   map: {fileID: 241752802}
-  movePreviewColor: {r: 0.2971698, g: 1, b: 0.7315023, a: 1}
+  movePreviewColor: {r: 0.24390352, g: 0.8207547, b: 0.3088057, a: 0.49803922}
 --- !u!1 &1735612260
 GameObject:
   m_ObjectHideFlags: 0

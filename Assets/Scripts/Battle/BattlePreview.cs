@@ -61,8 +61,6 @@ public class BattlePreview : MonoBehaviour
             }
         }
     }
-
-    // 플레이어 기준 맨해튼 거리 1인 타일 네 칸을 칠함
     public void PlayerMove()
     {
         if (map == null || !map.HasPlayerTile)
@@ -72,11 +70,49 @@ public class BattlePreview : MonoBehaviour
 
         var playerX = map.PlayerTileX;
         var playerY = map.PlayerTileY;
-        var PlayerMovePower = battle.Moverange();
-        Paint(playerX + PlayerMovePower, playerY); // 오른쪽
-        Paint(playerX - PlayerMovePower, playerY); // 왼쪽
-        Paint(playerX, playerY + PlayerMovePower); // 위쪽
-        Paint(playerX, playerY - PlayerMovePower); // 아래쪽
+        //var PlayerMovePower = battle.Moverange(); // 나중에 바꾸기 
+        var PlayerMovePower = 5;
+        
+        //Paint(playerX + PlayerMovePower, playerY); // 오른쪽
+        //Paint(playerX - PlayerMovePower, playerY); // 왼쪽
+        //Paint(playerX, playerY + PlayerMovePower); // 위쪽
+        //Paint(playerX, playerY - PlayerMovePower); // 아래쪽
+
+        // (moveRangeAmount , 0) 일 경우 
+        Paint(playerX + PlayerMovePower, playerY);
+        Paint(playerX - PlayerMovePower, playerY);
+        Paint(playerX, playerY + PlayerMovePower);
+        Paint(playerX, playerY - PlayerMovePower);
+
+        int playerMoveAmount = 0;
+        if (PlayerMovePower %  2 == 0) { playerMoveAmount = (PlayerMovePower / 2); }
+        if (PlayerMovePower %  2 != 0) { playerMoveAmount = (PlayerMovePower / 2) + 1; }
+
+
+        for (int i = 1; i <= (playerMoveAmount + 2) ;i ++) 
+        {
+            playerMoveAmount--;
+
+            // (moveRangeAmount - 1 , 0 일 경우 , 십자가 색칠) 
+            Paint((playerMoveAmount + 1)  + playerX, playerY);
+            Paint(-(playerMoveAmount  + 1)  + playerX, playerY);
+            Paint( playerX, playerY + (playerMoveAmount + 1) );
+            Paint( playerX, playerY - (playerMoveAmount + 1) );
+
+            // (moveRangeAmount - 1 , moveRangeAmount + 1 이 경우, 대각선 색칠 )
+            Paint((playerMoveAmount -1)  + playerX, (playerMoveAmount + 1)  + playerY);
+            Paint(-(playerMoveAmount -1)  + playerX, (playerMoveAmount + 1)  + playerY);
+            Paint((playerMoveAmount + 1)  + playerX, (playerMoveAmount - 1)  + playerY);
+            Paint((playerMoveAmount + 1)  + playerX, -(playerMoveAmount - 1)  + playerY);
+            Paint(-(playerMoveAmount +1)  + playerX, (playerMoveAmount - 1)  + playerY);
+
+            //오늘의 목표~!! 
+            //맨헤튼 거리가 2 , 3 이상일 때 갈 수 있는 모든 칸 칠하기 
+            // 1. moverange % 2 +1 만큼 반복?
+            // 2. 반복 수만큼 playerMoveAmount 칠하기?? 
+        }
+
+
     }
 
     public void AddTile(
