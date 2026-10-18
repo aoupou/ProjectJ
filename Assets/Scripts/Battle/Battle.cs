@@ -39,7 +39,7 @@ public class Battle : MonoBehaviour
     {
         HideActionUI();
         ChangeStep(Battle_Step.SelectDirection);
-        battlePreview.PlayerMove();
+        battlePreview.PlayerMovePreview();
         // 배틀 프리뷰의 이동위치 보는 코드와 연결
     }
     public void Move_Player(int direction) // 배틀 프리뷰에서 이동위치 1,2,3,4 로 받음

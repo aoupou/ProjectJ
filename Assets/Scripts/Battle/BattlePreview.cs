@@ -1,6 +1,10 @@
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using TMPro;
+using UnityEngine.UIElements;
 
 public class BattlePreview : MonoBehaviour
 {
@@ -20,8 +24,19 @@ public class BattlePreview : MonoBehaviour
 
     public Color movePreviewColor;
 
+    List<Vector2Int> cells;
+    List<Vector2Int> rightcells;
+    List<Vector2Int> downcells;
+    List<Vector2Int> leftcells;
+
+
     private void Awake()
     {
+        cells = new List<Vector2Int>();
+        rightcells = new List<Vector2Int>();
+        leftcells = new List<Vector2Int>();
+        downcells = new List<Vector2Int>();
+
         if (map == null)
         {
             Debug.LogError("BattlePreview에 Map이 지정되지 않았습니다.");
@@ -61,59 +76,86 @@ public class BattlePreview : MonoBehaviour
             }
         }
     }
-    public void PlayerMove()
+    public void PlayerMovePreview()
     {
         if (map == null || !map.HasPlayerTile)
             return;
-
         ResetPreviewColors();
+        //var PlayerMovePower = battle.Moverange(); // 나중에 바꾸기 
+        int PlayerMovePower = 5;
 
         var playerX = map.PlayerTileX;
         var playerY = map.PlayerTileY;
-        //var PlayerMovePower = battle.Moverange(); // 나중에 바꾸기 
-        var PlayerMovePower = 5;
-        
-        //Paint(playerX + PlayerMovePower, playerY); // 오른쪽
-        //Paint(playerX - PlayerMovePower, playerY); // 왼쪽
-        //Paint(playerX, playerY + PlayerMovePower); // 위쪽
-        //Paint(playerX, playerY - PlayerMovePower); // 아래쪽
+        Vector2Int playerTile = new Vector2Int(playerX, playerY);
 
-        // (moveRangeAmount , 0) 일 경우 
-        Paint(playerX + PlayerMovePower, playerY);
-        Paint(playerX - PlayerMovePower, playerY);
-        Paint(playerX, playerY + PlayerMovePower);
-        Paint(playerX, playerY - PlayerMovePower);
+        int neighborTileX = 0;
+        int neighborTileY = 0;
+        Vector2Int neighborTile = new Vector2Int(neighborTileX, neighborTileY);
 
-        int playerMoveAmount = 0;
-        if (PlayerMovePower %  2 == 0) { playerMoveAmount = (PlayerMovePower / 2); }
-        if (PlayerMovePower %  2 != 0) { playerMoveAmount = (PlayerMovePower / 2) + 1; }
-
-
-        for (int i = 1; i <= (playerMoveAmount + 2) ;i ++) 
+        Vector2Int[] directions =
         {
-            playerMoveAmount--;
+            new Vector2Int (0,1), // up
+            new Vector2Int (0,-1), // down
+            new Vector2Int (-1,0), // right
+            new Vector2Int (1,0), // left
+        };
 
-            // (moveRangeAmount - 1 , 0 일 경우 , 십자가 색칠) 
-            Paint((playerMoveAmount + 1)  + playerX, playerY);
-            Paint(-(playerMoveAmount  + 1)  + playerX, playerY);
-            Paint( playerX, playerY + (playerMoveAmount + 1) );
-            Paint( playerX, playerY - (playerMoveAmount + 1) );
+        int[,] distance = new int[map.Width, map.Height];
 
-            // (moveRangeAmount - 1 , moveRangeAmount + 1 이 경우, 대각선 색칠 )
-            Paint((playerMoveAmount -1)  + playerX, (playerMoveAmount + 1)  + playerY);
-            Paint(-(playerMoveAmount -1)  + playerX, (playerMoveAmount + 1)  + playerY);
-            Paint((playerMoveAmount + 1)  + playerX, (playerMoveAmount - 1)  + playerY);
-            Paint((playerMoveAmount + 1)  + playerX, -(playerMoveAmount - 1)  + playerY);
-            Paint(-(playerMoveAmount +1)  + playerX, (playerMoveAmount - 1)  + playerY);
 
-            //오늘의 목표~!! 
-            //맨헤튼 거리가 2 , 3 이상일 때 갈 수 있는 모든 칸 칠하기 
-            // 1. moverange % 2 +1 만큼 반복?
-            // 2. 반복 수만큼 playerMoveAmount 칠하기?? 
+        bool[,] isVisited = new bool [map.Width, map.Height];
+        bool[,] canGo = new bool [map.Width, map.Height];
+        for (int x = 0;  x < map.Width; x++)
+        {
+            for (int y = 0; y < map.Height;y++)
+            {
+                canGo [x,y] = true;
+            }
         }
 
+        canGo[playerX + 1, playerY - 2] = false; 
+        canGo[playerX + 1, playerY - 1] = false; 
+        canGo[playerX + 1, playerY - 0] = false; 
+        canGo[playerX + 1, playerY + 1] = false; 
+        canGo[playerX + 1, playerY + 2] = false;
 
+        Queue<Vector2Int> queue = new Queue<Vector2Int>();
+        
+        queue.Enqueue(playerTile); // eu1 
+        while (queue.Count > 0)
+        {
+
+            Vector2Int startTile = queue.Dequeue();
+
+            for (int directionsCount=0; directionsCount < directions.Length;directionsCount++)
+            {
+                neighborTile = startTile + directions[directionsCount];
+                distance[neighborTile.x, neighborTile.y] = Mathf.Abs(playerTile.x - neighborTile.x) + Mathf.Abs(playerTile.y - neighborTile.y);
+
+                if (distance[neighborTile.x,neighborTile.y] <= PlayerMovePower 
+                    && isVisited[neighborTile.x,neighborTile.y] == false 
+                    && canGo[neighborTile.x,neighborTile.y] == true)
+                {
+                    isVisited[neighborTile.x,neighborTile.y] = true;
+                    Paint(neighborTile.x, neighborTile.y);
+                    queue.Enqueue(neighborTile);
+                }
+            }
+        }
+        //오늘의 목표 
+        //1. 플레이어 좌표값 받아오기) 
+        //2. Queue 자료구조 만들기 ( Queue.Enqueue (playerTile) ) 
+        //3. bool 형으로 isVisited[tilex , tiley] 리스트 만들기 - 방문했는지 체크용 
+        //4. int 형으로  distance[tilex,tiley] 리스트 만들기 - 멘헤튼 거리 계산용(최대 거리 계산용)  
+
+        // 플레이어 타일 vs 새롭게 탐색할 타일 distance if 형 
+        // moverange 보다 작을 경우? -> 탐색 시작 
+        // isVisited -> false -> 탐색 시작 
+        // playertile을 새롭게 탐색할 타일로 교체 -> 위 행동 반복 
     }
+
+
+
 
     public void AddTile(
         int x,
