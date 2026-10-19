@@ -1,0 +1,33 @@
+# push 하면 커밋 제목 + 설명까지 디스코드로 보냄
+# 웹훅 주소는 저장소 Settings > Secrets and variables > Actions 의 DISCORD_WEBHOOK
+name: Discord 알림
+
+on:
+  push:
+    branches: ['**']
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    # 브랜치 삭제처럼 커밋이 없는 push는 건너뜀
+    if: ${{ toJSON(github.event.commits) != '[]' }}
+    steps:
+      - name: 디스코드로 보내기
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          jq '{
+            username: "깃허브알리미",
+            embeds: [{
+              title: "\(.repository.name) / \(.ref | sub("refs/heads/"; "")) : 커밋 \(.commits | length)개",
+              url: .compare,
+              color: 5793266,
+              description: (
+                [ .commits[]
+                  | "[`\(.id[0:7])`](\(.url)) **\(.author.name)**\n"
+                    + (.message | split("\n") | map(select(test("^Co-Authored-By:"; "i") | not)) | join("\n") | rtrimstr("\n"))
+                ] | join("\n\n")
+              )[0:4000]
+            }]
+          }' "$GITHUB_EVENT_PATH" > payload.json
+          curl -sf -H "Content-Type: application/json" -d @payload.json "$WEBHOOK"
