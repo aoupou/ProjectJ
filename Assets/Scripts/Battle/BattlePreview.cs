@@ -111,7 +111,7 @@ public class BattlePreview : MonoBehaviour
         {
             for (int y = 0; y < map.Height;y++)
             {
-                canGo [x,y] = true; // 알림테스트용 (나중에 지우삼)
+                canGo [x,y] = true;
             }
         }
 
