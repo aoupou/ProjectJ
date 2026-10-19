@@ -126,13 +126,14 @@ public class BattlePreview : MonoBehaviour
         {
 
             Vector2Int startTile = queue.Dequeue();
+            distance[playerTile.x, playerTile.y] = 0;
 
             for (int directionsCount=0; directionsCount < directions.Length;directionsCount++)
             {
                 neighborTile = startTile + directions[directionsCount];
-                distance[neighborTile.x, neighborTile.y] = Mathf.Abs(playerTile.x - neighborTile.x) + Mathf.Abs(playerTile.y - neighborTile.y);
+                distance[neighborTile.x, neighborTile.y] = distance[startTile.x, startTile.y]  + 1;
 
-                if (distance[neighborTile.x,neighborTile.y] <= PlayerMovePower 
+                if (distance[neighborTile.x,neighborTile.y] > 0 && distance[neighborTile.x,neighborTile.y] <= PlayerMovePower 
                     && isVisited[neighborTile.x,neighborTile.y] == false 
                     && canGo[neighborTile.x,neighborTile.y] == true)
                 {
