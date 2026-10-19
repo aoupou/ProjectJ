@@ -104,6 +104,8 @@ public class BattlePreview : MonoBehaviour
 
 
         bool[,] isVisited = new bool [map.Width, map.Height];
+        isVisited[playerTile.x, playerTile.y] = true;
+
         bool[,] canGo = new bool [map.Width, map.Height];
         for (int x = 0;  x < map.Width; x++)
         {
@@ -113,11 +115,11 @@ public class BattlePreview : MonoBehaviour
             }
         }
 
-        canGo[playerX + 1, playerY - 2] = false; 
-        canGo[playerX + 1, playerY - 1] = false; 
-        canGo[playerX + 1, playerY - 0] = false; 
-        canGo[playerX + 1, playerY + 1] = false; 
-        canGo[playerX + 1, playerY + 2] = false;
+        //canGo[playerX + 1, playerY - 2] = false; 
+        //canGo[playerX + 1, playerY - 1] = false; 
+        //canGo[playerX + 1, playerY - 0] = false; 
+        //canGo[playerX + 1, playerY + 1] = false; 
+        //canGo[playerX + 1, playerY + 2] = false;
 
         Queue<Vector2Int> queue = new Queue<Vector2Int>();
         
@@ -133,7 +135,7 @@ public class BattlePreview : MonoBehaviour
                 neighborTile = startTile + directions[directionsCount];
                 distance[neighborTile.x, neighborTile.y] = distance[startTile.x, startTile.y]  + 1;
 
-                if (distance[neighborTile.x,neighborTile.y] > 0 && distance[neighborTile.x,neighborTile.y] <= PlayerMovePower 
+                if ( distance[neighborTile.x,neighborTile.y] <= PlayerMovePower 
                     && isVisited[neighborTile.x,neighborTile.y] == false 
                     && canGo[neighborTile.x,neighborTile.y] == true)
                 {
