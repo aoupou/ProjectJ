@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterData
   displayName: "\uD50C\uB808\uC774\uC5B4"
   hp: 10
-  maxHp: 0
+  maxHp: 6
   moveRange: 3
   icon: {fileID: 0}
   missP: 0
   armor: 0
-  aggression: 5
+  aggression: 0
   distance: 0

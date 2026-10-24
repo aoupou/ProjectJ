@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb5c765161352354ba617d3e9918ab2b, type: 3}
+  m_Name: aiTestSkill3
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySkillData
+  displayName: "\uC2A4\uC2A4\uC2A4\uD0AC"
+  owner: {fileID: 11400000, guid: 1a9ced4db0f580b40abfc2f333551492, type: 2}
+  skillRD:
+  - cell: {x: -1, y: 1}
+    damage: 3
+  - cell: {x: 0, y: 1}
+    damage: 3
+  - cell: {x: 1, y: 1}
+    damage: 3
+  ATP: 40
+  hitP: 100
+  effectType: 0
+  effectValue: 0
+  skillText: "\uC2A4\uC2A4\uC2A4\uD0AC\uC774\uB2E4."

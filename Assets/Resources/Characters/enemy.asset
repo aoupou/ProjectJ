@@ -19,5 +19,5 @@ MonoBehaviour:
   icon: {fileID: 0}
   missP: 0
   armor: 0
-  aggression: 5
+  aggression: 0
   distance: 0

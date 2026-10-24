@@ -24,19 +24,8 @@ public class BattlePreview : MonoBehaviour
 
     public Color movePreviewColor;
 
-    List<Vector2Int> cells;
-    List<Vector2Int> rightcells;
-    List<Vector2Int> downcells;
-    List<Vector2Int> leftcells;
-
-
     private void Awake()
     {
-        cells = new List<Vector2Int>();
-        rightcells = new List<Vector2Int>();
-        leftcells = new List<Vector2Int>();
-        downcells = new List<Vector2Int>();
-
         if (map == null)
         {
             Debug.LogError("BattlePreview에 Map이 지정되지 않았습니다.");
@@ -94,10 +83,10 @@ public class BattlePreview : MonoBehaviour
 
         Vector2Int[] directions =
         {
-            new Vector2Int (0,1), // up
-            new Vector2Int (0,-1), // down
-            new Vector2Int (-1,0), // right
-            new Vector2Int (1,0), // left
+            new Vector2Int (0,1),
+            new Vector2Int (0,-1), 
+            new Vector2Int (-1,0), 
+            new Vector2Int (1,0), 
         };
 
         int[,] distance = new int[map.Width, map.Height];
@@ -130,7 +119,7 @@ public class BattlePreview : MonoBehaviour
             Vector2Int startTile = queue.Dequeue();
             distance[playerTile.x, playerTile.y] = 0;
 
-            for (int directionsCount=0; directionsCount < directions.Length;directionsCount++)
+            for (int directionsCount=0; directionsCount < directions.Length; directionsCount++)
             {
                 neighborTile = startTile + directions[directionsCount];
                 distance[neighborTile.x, neighborTile.y] = distance[startTile.x, startTile.y]  + 1;

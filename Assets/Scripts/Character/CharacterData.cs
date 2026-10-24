@@ -21,8 +21,8 @@ public class CharacterData : ScriptableObject
 
     [Tooltip("추가 체력")]
     public int armor;
-    [Tooltip("공격성")]
-    public Aggression aggression;
+    [Tooltip("공격성 (0 = 공격안함 ~ 100 = 무조건 공격)"), Range(0, 100)]
+    public int aggression;
     [Tooltip("플레이어와의 거리(칸)")]
     public int distance;
 }

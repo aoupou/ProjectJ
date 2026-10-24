@@ -128,4 +128,5 @@ public class Battle : MonoBehaviour
         moverange = playerRangeData.moveRange;
         return moverange;
     }
+
 }
