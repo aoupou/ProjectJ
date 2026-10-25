@@ -23,6 +23,7 @@ public class BattlePreview : MonoBehaviour
     private bool hasLastTile;
 
     public Color movePreviewColor;
+    public bool[,] canGo;
 
     private void Awake()
     {
@@ -95,7 +96,7 @@ public class BattlePreview : MonoBehaviour
         bool[,] isVisited = new bool [map.Width, map.Height];
         isVisited[playerTile.x, playerTile.y] = true;
 
-        bool[,] canGo = new bool [map.Width, map.Height];
+         canGo = new bool [map.Width, map.Height];
         for (int x = 0;  x < map.Width; x++)
         {
             for (int y = 0; y < map.Height;y++)

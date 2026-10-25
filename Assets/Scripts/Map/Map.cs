@@ -7,6 +7,8 @@ public class Map : MonoBehaviour
 {
     [SerializeField] private MapData mapDataAsset;
 
+    [SerializeField] BattlePreview battlePreview;
+
     private TileData[,] mapData;
 
     public GameObject MapSize;
@@ -352,5 +354,19 @@ public class Map : MonoBehaviour
         renderer.sharedMaterial = fill.sharedMaterial;
         renderer.color = FrameColor;
         renderer.sortingOrder = 2;
+    }
+
+    public bool CanMove(int x, int y)
+    {
+        if (IsValidTile(x, y) == false)
+            return false;
+
+        if ((battlePreview.canGo != null && battlePreview.canGo[x, y] == false )|| mapData[x, y].OnPlayer == true )
+        {
+            return false;
+        }
+
+        else
+            return true;
     }
 }
