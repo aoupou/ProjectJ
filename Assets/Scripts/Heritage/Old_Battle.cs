@@ -69,7 +69,6 @@ public class Old_Battle : MonoBehaviour
             isAiming = false;
             AttackCells();
             tileColor.ResetColor();
-            enemy.SelectAction();
             EndTurn();
         }
     }
@@ -377,7 +376,6 @@ public class Old_Battle : MonoBehaviour
         Step = Battle_Step.TurnEnd;
 
         // 플레이어 이동이 끝났으므로 적 행동 선택
-        enemy.SelectAction();
 
         EndTurn();
     }

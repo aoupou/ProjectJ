@@ -22,11 +22,17 @@ public class Map : MonoBehaviour
 
     private int playerTileX = -1;
     private int playerTileY = -1;
+    private int enemyTileX = -1;
+    private int enemyTileY = -1;
     private bool hasPlayerTile;
+    private bool hasEnemyTile;
 
     public int PlayerTileX => playerTileX;
     public int PlayerTileY => playerTileY;
+    public int EnemyTileX => enemyTileX;
+    public int EnemyTileY => enemyTileY;
     public bool HasPlayerTile => hasPlayerTile;
+    public bool HasEnemyTile => hasEnemyTile;
 
     private BattlePreview tileColor;
 
@@ -95,9 +101,11 @@ public class Map : MonoBehaviour
 
                     // 플레이어 시작 위치는 아래에서 무작위로 지정
                     OnPlayer = false,
-
-                    // 기존 적 위치 정보는 유지
-                    OnEnemy = source.OnEnemy
+                    Visitable = true,
+                    CanEnemyGo = true,
+                    CanPlayerGo = true,
+                    OnApple = false,
+                    OnEnemy = false
                 };
             }
         }
@@ -106,11 +114,15 @@ public class Map : MonoBehaviour
         if (TryGetRandomPlayerTile(out int startX, out int startY))
         {
             //SetPlayerTile(startX, startY);
-            SetPlayerTile(7, 7); // 나중에 바꾸기 
+            SetPlayerTile(1, 1); // 나중에 바꾸기 
+        }
+        if(TryGetRandomEnemyTile(out int Ex, out int Ey))
+        {
+            SetEnemyTile(Ex, Ey);
         }
         else
         {
-            Debug.LogError("플레이어를 배치할 수 있는 타일이 없습니다.");
+            Debug.LogError("플레이어 혹은 적을 배치할 수 있는 타일이 없습니다.");
         }
 
         // 맵 크기 지정용 오브젝트를 게임 중 숨김
@@ -160,7 +172,35 @@ public class Map : MonoBehaviour
 
         x = selectedTile.x;
         y = selectedTile.y;
-        return true;
+        return true; 
+    }
+    private bool TryGetRandomEnemyTile(out int x, out int y)
+    {
+        x = -1;
+        y = -1;
+
+        List<TileData> availableTiles = new List<TileData>();
+
+        for (int tileX = 0; tileX < Width; tileX++)
+        {
+            for (int tileY = 0; tileY < Height; tileY++)
+            {
+                if (mapData[tileX, tileY] != null && !IsNearPlayer(tileX, tileY))
+                    availableTiles.Add(mapData[tileX, tileY]);
+                else if (mapData[tileX, tileY] != null && IsNearPlayer(tileX, tileY))
+                    continue;
+            }
+        }
+
+        if (availableTiles.Count == 0)
+            return false;
+
+        TileData selectedTile =
+            availableTiles[Random.Range(0, availableTiles.Count)];
+
+        x = selectedTile.x;
+        y = selectedTile.y;
+        return true; 
     }
 
     // 플레이어 타일 좌표와 OnPlayer 표시를 함께 갱신
@@ -177,11 +217,26 @@ public class Map : MonoBehaviour
 
         mapData[playerTileX, playerTileY].OnPlayer = true;
         hasPlayerTile = true;
+        mapData[playerTileX, playerTileY].CanEnemyGo = false;
+
+        return true;
+    }
+    private bool SetEnemyTile(int newX, int newY)
+    {
+        if (!IsValidTile(newX, newY)) return false;
+        if (hasEnemyTile)
+            mapData[enemyTileX, enemyTileY].OnEnemy = false;
+        enemyTileX = newX;
+        enemyTileY = newY;
+
+        mapData[enemyTileX,enemyTileY].OnEnemy = true;
+        hasEnemyTile = true;
+        mapData[enemyTileX, enemyTileY].CanPlayerGo = false;
 
         return true;
     }
 
-    private bool IsValidTile(int x, int y)
+    private bool IsValidTile(int x, int y) //Valid 유효한
     {
         return mapData != null &&
                x >= 0 && x < Width &&
@@ -216,7 +271,7 @@ public class Map : MonoBehaviour
         tileTransform.localScale = new Vector3(
             TileWidthSize,
             TileHeightSize,
-            1f
+            1f 
         );
 
         Vector3 worldPosition = new Vector3(
@@ -229,7 +284,7 @@ public class Map : MonoBehaviour
         mapData[x, y].worldPosition = worldPosition;
     }
 
-    private void RegisterTileCoordinate(GameObject tile, int x, int y)
+    private void RegisterTileCoordinate(GameObject tile, int x, int y) //  타일(Tile) 좌표(Coordinate) 등록(Register)
     {
         Collider2D tileCollider = tile.GetComponent<Collider2D>();
 
@@ -299,6 +354,15 @@ public class Map : MonoBehaviour
             out worldPosition
         );
     }
+    public bool TryGetEnemyWorldPosition(out Vector3 worldPosition)
+    {
+        return TryGetTileWorldPosition(
+            enemyTileX,
+            enemyTileY,
+            out worldPosition
+        );
+    }
+    
 
     private void CreateFrame()
     {
@@ -356,17 +420,46 @@ public class Map : MonoBehaviour
         renderer.sortingOrder = 2;
     }
 
-    public bool CanMove(int x, int y)
+    private bool IsNearPlayer(int x, int y)
     {
-        if (IsValidTile(x, y) == false)
-            return false;
+        if (Width < 4 || Height < 4)
+        {
+            Debug.LogError("너비, 높이 4 미만.무조건 옆에 있을 것");
+        }
+        if (x == -1 || x == -1)
+        {
+            Debug.LogError("아직 플레이어 타일 정해지지 않음");
+        }
+        for (int i = x - 1; i <= x + 1; i++)
+        {
+            for (int j = y - 1; j <= y + 1; j++)
+            {
+                if (!IsValidTile(i, j))
+                    continue;
+                if (mapData[i, j].OnPlayer)
+                    return true;
+            }
+        }
+        return false;
+    }
+    public void SetVisitableFalse(int x, int y) // 비짓터블 코드 끄면은 캔 플레이어,에너미 고 같이 꺼지도록 헀습니다. 그래도 혹시 모르니, 다른 코드에서는 비짓터블 예외처리 넣어주세요.
+    {
+        mapData[x,y].Visitable = false;
+        mapData[x,y].CanPlayerGo = false;
+        mapData[x,y].CanEnemyGo = false;
+    }
+    public bool TryGetTile(int x, int y, out TileData tile)
+    {
+        tile = null;
 
-        if ((battlePreview.canGo != null && battlePreview.canGo[x, y] == false )|| mapData[x, y].OnPlayer == true )
+        if (mapData == null ||
+            x < 0 || x >= mapData.GetLength(0) ||
+            y < 0 || y >= mapData.GetLength(1))
         {
             return false;
         }
 
-        else
-            return true;
+        tile = mapData[x, y];
+        return tile != null;
     }
 }

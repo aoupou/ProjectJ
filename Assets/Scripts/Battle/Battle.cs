@@ -18,6 +18,7 @@ public class Battle : MonoBehaviour
         SelectDirection, // 이동 위치 또는 방향 선택
         SelectWeapon, // 무기 선택
         SelectAttack, // 공격 방식 선택
+        EnemySellect, //  AI 행동 선택
         TurnEnd // 턴 종료
     }
     public void Awake()
@@ -42,36 +43,22 @@ public class Battle : MonoBehaviour
         battlePreview.PlayerMovePreview();
         // 배틀 프리뷰의 이동위치 보는 코드와 연결
     }
-    public void Move_Player(int direction) // 배틀 프리뷰에서 이동위치 1,2,3,4 로 받음
+    public void Move_Player(int x, int y) // 배틀 프리뷰에서 이동위치 1,2,3,4 로 받음
     {
         if (CurrentStep != Battle_Step.SelectDirection)
             return;
         // 배틀 프리뷰에서 받은 목적지 확인
         // 이동가능 여부 판단 (장애물 생기면)
-        switch (direction)
+
+        if(!map.TryGetTileWorldPosition(x,y, out Vector3 worldPosition))
         {
-            case 1: // 위
-                Move_Up();
-                break;
-
-            case 2: // 아래
-                Move_Down();
-                break;
-
-            case 3: // 오른쪽
-                Move_Right();
-                break;
-
-            case 4: // 왼쪽
-                Move_Left();
-                break;
-
-            default:
-                // 잘못된 이동 명령
-                return;
+            Debug.LogWarning("월드 포지션 없음 ㅅㄱ");
         }
+        playerTransform.position = worldPosition;
+
 
         // 배틀 쇼의 애니메이션 재생 코드와 연결
+        Finish_Anim(); // 임시로 턴 종료 시키지만, 나중에 적 행동과 연결지어야 함
     }
     public void Finish_Anim() // 애니메이션 재생 종료 후 실행
     {

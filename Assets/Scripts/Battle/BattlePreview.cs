@@ -23,7 +23,6 @@ public class BattlePreview : MonoBehaviour
     private bool hasLastTile;
 
     public Color movePreviewColor;
-    public bool[,] canGo;
 
     private void Awake()
     {
@@ -65,6 +64,11 @@ public class BattlePreview : MonoBehaviour
                 hasLastTile = true;
             }
         }
+        if(Mouse.current.leftButton.wasPressedThisFrame && map.TryGetTileCoordinate(hit.collider, out int x, out int y))
+        {
+            if (battle.CurrentStep != Battle.Battle_Step.SelectDirection) return;
+            battle.Move_Player(x,y);
+        }
     }
     public void PlayerMovePreview()
     {
@@ -96,20 +100,6 @@ public class BattlePreview : MonoBehaviour
         bool[,] isVisited = new bool [map.Width, map.Height];
         isVisited[playerTile.x, playerTile.y] = true;
 
-         canGo = new bool [map.Width, map.Height];
-        for (int x = 0;  x < map.Width; x++)
-        {
-            for (int y = 0; y < map.Height;y++)
-            {
-                canGo [x,y] = true;
-            }
-        }
-
-        //canGo[playerX + 1, playerY - 2] = false; 
-        //canGo[playerX + 1, playerY - 1] = false; 
-        //canGo[playerX + 1, playerY - 0] = false; 
-        //canGo[playerX + 1, playerY + 1] = false; 
-        //canGo[playerX + 1, playerY + 2] = false;
 
         Queue<Vector2Int> queue = new Queue<Vector2Int>();
         
@@ -127,7 +117,7 @@ public class BattlePreview : MonoBehaviour
 
                 if ( distance[neighborTile.x,neighborTile.y] <= PlayerMovePower 
                     && isVisited[neighborTile.x,neighborTile.y] == false 
-                    && canGo[neighborTile.x,neighborTile.y] == true)
+                    && map.[neighborTile.x,neighborTile.y] == true)
                 {
                     isVisited[neighborTile.x,neighborTile.y] = true;
                     Paint(neighborTile.x, neighborTile.y);
