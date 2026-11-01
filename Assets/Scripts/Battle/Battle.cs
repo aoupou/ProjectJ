@@ -45,6 +45,7 @@ public class Battle : MonoBehaviour
     }
     public void Choose_Attack()
     {
+        HideActionUI();
         ShowWeaponUI();
         ChangeStep(Battle_Step.SelectWeapon);
 
@@ -54,14 +55,31 @@ public class Battle : MonoBehaviour
     {
         if (CurrentStep != Battle_Step.SelectDirection)
             return;
+        if (map == null || playerTransform == null || battlePreview == null)
+            return;
+
+        if (!battlePreview.CanMoveTo(x, y))
+            return;
+
+        Player player = playerTransform.GetComponent<Player>();
+        if (player == null)
+        {
+            Debug.LogError("playerTransform에 Player 컴포넌트가 없습니다.");
+            return;
+        }
         // 배틀 프리뷰에서 받은 목적지 확인
         // 이동가능 여부 판단 (장애물 생기면)
 
         if(!map.TryGetTileWorldPosition(x,y, out Vector3 worldPosition))
         {
             Debug.LogWarning("월드 포지션 없음 ㅅㄱ");
+            return;
         }
-        playerTransform.position = worldPosition;
+        if (!map.SetPlayerTile(x, y))
+            return;
+
+        battlePreview.ClearMovePreview();
+        playerTransform.position = player.GetPositionOnTile(worldPosition);
 
 
         // 배틀 쇼의 애니메이션 재생 코드와 연결

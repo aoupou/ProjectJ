@@ -67,8 +67,14 @@ public class Player : MonoBehaviour
             return;
         }
 
-        worldPosition += new Vector3(positionInTile.x, positionInTile.y, 0f);
-        transform.position = worldPosition;
+        transform.position = GetPositionOnTile(worldPosition);
+    }
+
+    // 시작 배치와 이동에 같은 Inspector 보정값을 적용합니다.
+    public Vector3 GetPositionOnTile(Vector3 tileWorldPosition)
+    {
+        return tileWorldPosition +
+            new Vector3(positionInTile.x, positionInTile.y, 0f);
     }
 
     public void MoveUp()

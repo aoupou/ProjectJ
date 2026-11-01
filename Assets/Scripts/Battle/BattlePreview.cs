@@ -1,10 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UIElements;
 
 public class BattlePreview : MonoBehaviour
 {
@@ -18,9 +15,7 @@ public class BattlePreview : MonoBehaviour
     private TMP_Text[,] tileText;
     private Color[,] originalTileColors;
 
-    private int lastTileX;
-    private int lastTileY;
-    private bool hasLastTile;
+    private bool[,] reachableTiles;
 
     public Color movePreviewColor;
 
@@ -40,64 +35,66 @@ public class BattlePreview : MonoBehaviour
 
     private void Update()
     {
-        if (Mouse.current == null || mainCamera == null || map == null)
+        if (Mouse.current == null || mainCamera == null || map == null || battle == null)
             return;
 
-        Vector2 mousePosition = Mouse.current.position.ReadValue();
-        Ray ray = mainCamera.ScreenPointToRay(mousePosition);
-
-        RaycastHit2D hit =
-            Physics2D.GetRayIntersection(ray, Mathf.Infinity, tileLayer);
-
-        if (hit.collider == null)
-        {
-            hasLastTile = false;
+        if (!Mouse.current.leftButton.wasPressedThisFrame ||
+            battle.CurrentStep != Battle.Battle_Step.SelectDirection)
             return;
-        }
 
-        if (map.TryGetTileCoordinate(hit.collider, out int tileX, out int tileY))
-        {
-            if (!hasLastTile || tileX != lastTileX || tileY != lastTileY)
-            {
-                lastTileX = tileX;
-                lastTileY = tileY;
-                hasLastTile = true;
-            }
-        }
-        if(Mouse.current.leftButton.wasPressedThisFrame && map.TryGetTileCoordinate(hit.collider, out int x, out int y))
-        {
-            if (battle.CurrentStep != Battle.Battle_Step.SelectDirection) return;
-            if (!map.IsValidTile(x, y)) return;
-            if (!map.TryGetTile(x, y, out TileData tile))
-            {
-                if (tile.Visitable)
-                {
-                    battle.Move_Player(x, y);
-                }
-            }
-            
-        }
+        Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+        RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity, tileLayer);
+
+        if (hit.collider == null ||
+            !map.TryGetTileCoordinate(hit.collider, out int x, out int y))
+            return;
+
+        // Recalculate so changed obstacles and movement power are respected.
+        PlayerMovePreview();
+        if (!CanMoveTo(x, y))
+            return;
+
+        battle.Move_Player(x, y);
     }
+
     public void PlayerAttackPreview()
     {
-        ResetPreviewColors();
-
+        ClearMovePreview();
     }
+
     public void PlayerMovePreview()
     {
-        if (map == null)
-            return;
+        reachableTiles = CalculateMoveRange();
+        ShowMovePreview(reachableTiles);
+    }
 
+    public bool CanMoveTo(int x, int y)
+    {
+        return reachableTiles != null &&
+               x >= 0 && x < reachableTiles.GetLength(0) &&
+               y >= 0 && y < reachableTiles.GetLength(1) &&
+               reachableTiles[x, y] &&
+               map != null && map.TryGetTile(x, y, out TileData tile) &&
+               tile.Visitable && tile.CanPlayerGo && !tile.OnEnemy;
+    }
+
+    public void ClearMovePreview()
+    {
+        reachableTiles = null;
         ResetPreviewColors();
-        if (!map.HasPlayerTile)
-            return;
+    }
+
+    // Calculate reachability without changing any visuals.
+    private bool[,] CalculateMoveRange()
+    {
+        if (map == null || battle == null || !map.HasPlayerTile)
+            return null;
 
         var PlayerMovePower = battle.Moverange();
-
         Vector2Int playerTile = new Vector2Int(map.PlayerTileX, map.PlayerTileY);
 
         if (!map.TryGetTile(playerTile.x, playerTile.y, out _))
-            return;
+            return null;
 
         Vector2Int[] directions =
         {
@@ -139,27 +136,40 @@ public class BattlePreview : MonoBehaviour
                 if (isVisited[neighborTile.x, neighborTile.y])
                     continue;
 
-                if (!tile.Visitable || !tile.CanPlayerGo || tile.OnEnemy)
+                // 적은 탐색을 막지 않는다. 지형의 이동 불가 설정만 검사한다.
+                if (!tile.Visitable || !tile.CanPlayerGo)
                     continue;
                 isVisited[neighborTile.x, neighborTile.y] = true;
 
                 distance[neighborTile.x, neighborTile.y] = currentDistance + 1;
 
-                Paint(neighborTile.x, neighborTile.y);
+
                 queue.Enqueue(neighborTile);
             }
         }
-        //오늘의 목표 
-        //1. 플레이어 좌표값 받아오기) 
-        //2. Queue 자료구조 만들기 ( Queue.Enqueue (playerTile) ) 
-        //3. bool 형으로 isVisited[tilex , tiley] 리스트 만들기 - 방문했는지 체크용 
-        //4. int 형으로  distance[tilex,tiley] 리스트 만들기 - 멘헤튼 거리 계산용(최대 거리 계산용)  
-
-        // 플레이어 타일 vs 새롭게 탐색할 타일 distance if 형 
-        // moverange 보다 작을 경우? -> 탐색 시작 
-        // isVisited -> false -> 탐색 시작 
-        // playertile을 새롭게 탐색할 타일로 교체 -> 위 행동 반복 
+        // The starting tile is visited during BFS but is not a destination.
+        isVisited[playerTile.x, playerTile.y] = false;
+        return isVisited;
     }
+
+    // Visuals only: display the calculated movement range.
+    private void ShowMovePreview(bool[,] moveRange)
+    {
+        ResetPreviewColors();
+        if (moveRange == null)
+            return;
+
+        for (int x = 0; x < moveRange.GetLength(0); x++)
+        {
+            for (int y = 0; y < moveRange.GetLength(1); y++)
+            {
+                // 적 타일은 탐색에 포함하지만 색칠과 이동 목적지에서는 제외한다.
+                if (moveRange[x, y] && CanMoveTo(x, y))
+                    Paint(x, y);
+            }
+        }
+    }
+
     public void AddTile(
         int x,
         int y,
@@ -189,6 +199,9 @@ public class BattlePreview : MonoBehaviour
     // 이전 이동 미리보기 색을 원래 타일 색으로 복원
     private void ResetPreviewColors()
     {
+        if (tileFill == null)
+            return;
+
         for (int x = 0; x < map.Width; x++)
         {
             for (int y = 0; y < map.Height; y++)

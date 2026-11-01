@@ -26,6 +26,7 @@ public class Map : MonoBehaviour
     private int enemyTileY = -1;
     private bool hasPlayerTile;
     private bool hasEnemyTile;
+    private bool playerTileOriginalCanEnemyGo;
 
     public int PlayerTileX => playerTileX;
     public int PlayerTileY => playerTileY;
@@ -101,9 +102,9 @@ public class Map : MonoBehaviour
 
                     // 플레이어 시작 위치는 아래에서 무작위로 지정
                     OnPlayer = false,
-                    Visitable = true,
-                    CanEnemyGo = true,
-                    CanPlayerGo = true,
+                    Visitable = source.Visitable,
+                    CanEnemyGo = source.CanEnemyGo,
+                    CanPlayerGo = source.CanPlayerGo,
                     OnApple = false,
                     OnEnemy = false
                 };
@@ -185,10 +186,11 @@ public class Map : MonoBehaviour
         {
             for (int tileY = 0; tileY < Height; tileY++)
             {
-                if (mapData[tileX, tileY] != null && !IsNearPlayer(tileX, tileY))
+                if (mapData[tileX, tileY] != null &&
+                    mapData[tileX, tileY].Visitable &&
+                    mapData[tileX, tileY].CanEnemyGo &&
+                    !IsNearPlayer(tileX, tileY))
                     availableTiles.Add(mapData[tileX, tileY]);
-                else if (mapData[tileX, tileY] != null && IsNearPlayer(tileX, tileY))
-                    continue;
             }
         }
 
@@ -210,11 +212,17 @@ public class Map : MonoBehaviour
             return false;
 
         if (hasPlayerTile)
+        {
             mapData[playerTileX, playerTileY].OnPlayer = false;
+            mapData[playerTileX, playerTileY].CanEnemyGo =
+                playerTileOriginalCanEnemyGo;
+        }
 
         playerTileX = newX;
         playerTileY = newY;
 
+        // 플레이어 배치로 덮어쓰기 전의 지형 설정을 저장한다.
+        playerTileOriginalCanEnemyGo = mapData[playerTileX, playerTileY].CanEnemyGo;
         mapData[playerTileX, playerTileY].OnPlayer = true;
         hasPlayerTile = true;
         mapData[playerTileX, playerTileY].CanEnemyGo = false;
@@ -231,7 +239,7 @@ public class Map : MonoBehaviour
 
         mapData[enemyTileX,enemyTileY].OnEnemy = true;
         hasEnemyTile = true;
-        mapData[enemyTileX, enemyTileY].CanPlayerGo = false;
+        // 적 점유 여부는 OnEnemy로 검사하고 지형의 이동 설정은 유지한다.
 
         return true;
     }
@@ -444,9 +452,16 @@ public class Map : MonoBehaviour
     }
     public void SetVisitableFalse(int x, int y) // 비짓터블 코드 끄면은 캔 플레이어,에너미 고 같이 꺼지도록 헀습니다. 그래도 혹시 모르니, 다른 코드에서는 비짓터블 예외처리 넣어주세요.
     {
+        if (!IsValidTile(x, y))
+            return;
+
         mapData[x,y].Visitable = false;
         mapData[x,y].CanPlayerGo = false;
         mapData[x,y].CanEnemyGo = false;
+
+        // 플레이어가 떠나도 새로 지정한 이동 불가 상태를 유지한다.
+        if (hasPlayerTile && playerTileX == x && playerTileY == y)
+            playerTileOriginalCanEnemyGo = false;
     }
     public bool TryGetTile(int x, int y, out TileData tile)
     {
