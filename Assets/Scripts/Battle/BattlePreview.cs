@@ -18,6 +18,13 @@ public class BattlePreview : MonoBehaviour
     private bool[,] reachableTiles;
 
     public Color movePreviewColor;
+    public Color attackPreviewColor;
+
+    // 공격 미리보기용: 지금 고른 무기, 마지막으로 칠한 방향, 마우스가 올라간 칸
+    private WeaponData currentWeapon;
+    private Vector2Int lastDirection;
+    private int lastTileX;
+    private int lastTileY;
 
     private void Awake()
     {
@@ -38,6 +45,8 @@ public class BattlePreview : MonoBehaviour
         if (Mouse.current == null || mainCamera == null || map == null || battle == null)
             return;
 
+        RefreshAttackPreview();
+
         if (!Mouse.current.leftButton.wasPressedThisFrame ||
             battle.CurrentStep != Battle.Battle_Step.SelectDirection)
             return;
@@ -57,10 +66,110 @@ public class BattlePreview : MonoBehaviour
         battle.Move_Player(x, y);
     }
 
-    public void PlayerAttackPreview()
+    private Vector2Int Rotate(Vector2Int cell, int direction)
     {
-        ClearMovePreview();
+        if (direction == 0) 
+        {
+            Vector2Int directionChangeCell = new Vector2Int(cell.x, cell.y);
+            return directionChangeCell;
+        }
+        else if (direction == 1)
+        {
+            Vector2Int directionChangeCell = new Vector2Int(-cell.x, -cell.y);
+            return directionChangeCell;
+        }
+        else if (direction == 2)
+        {
+            Vector2Int directionChangeCell = new Vector2Int(cell.y, -cell.x);
+            return directionChangeCell;
+        }
+        else // (direction == 3)
+        {
+            Vector2Int directionChangeCell = new Vector2Int(-cell.y, cell.x);
+            return directionChangeCell;
+        }
+        
     }
+    private Vector2Int GetMouseDirection(Vector2Int targetTile)
+    {
+        Vector2Int playerTile = new Vector2Int(map.PlayerTileX, map.PlayerTileY);
+
+        int dx = lastTileX - playerTile.x ;
+        int dy = lastTileY - playerTile.y ;
+
+        if (Mathf.Abs(dy) > Mathf.Abs(dx))
+        {
+            if (dy > 0) { Vector2Int RotateTile = Rotate(targetTile, 0); return RotateTile; }
+            else { Vector2Int RotateTile = Rotate(targetTile, 1); return RotateTile; }
+        }
+        else // dx < dy 
+        {
+            if (dx > 0) { Vector2Int RotateTile = Rotate(targetTile, 2); return RotateTile; }
+            else { Vector2Int RotateTile = Rotate(targetTile, 3); return RotateTile; }
+        }
+    }
+
+    public void PlayerAttackPreview(WeaponData weapon)
+    {
+        currentWeapon = weapon;
+
+        ClearMovePreview();
+
+        Vector2Int playerTile = new Vector2Int(map.PlayerTileX, map.PlayerTileY);
+        
+        if (weapon.weaponType == WeaponType.Magic)
+        {
+            foreach (AttackCell attackCell in weapon.weaponRD)
+            {
+                Vector2Int targetTile = attackCell.cell;
+                // 채호님이 알아서... 
+                Paint(targetTile.x, targetTile.y, attackPreviewColor);
+            }
+            
+        }
+
+        else
+        {
+            foreach (AttackCell attackCell in weapon.weaponRD)
+            {
+                Vector2Int targetTile = attackCell.cell;
+                Vector2Int getMouseDirection = playerTile + GetMouseDirection(targetTile);
+
+                Paint(getMouseDirection.x, getMouseDirection.y, attackPreviewColor);
+            }
+        }
+    }
+
+    // 마우스가 올라간 칸 갱신
+    private void UpdateMouseTile()
+    {
+        Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+        RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity, tileLayer);
+
+        if (hit.collider != null && map.TryGetTileCoordinate(hit.collider, out int x, out int y))
+        {
+            lastTileX = x;
+            lastTileY = y;
+        }
+    }
+
+    private void RefreshAttackPreview()
+    {
+        UpdateMouseTile();
+
+        if (battle.CurrentStep != Battle.Battle_Step.SelectAttack)
+            return;
+        if (currentWeapon == null)
+            return;
+
+        Vector2Int direction = GetMouseDirection(Vector2Int.up);
+        if (direction == lastDirection)
+            return;
+
+        lastDirection = direction;
+        PlayerAttackPreview(currentWeapon);
+    }
+
 
     public void PlayerMovePreview()
     {
@@ -165,7 +274,7 @@ public class BattlePreview : MonoBehaviour
             {
                 // 적 타일은 탐색에 포함하지만 색칠과 이동 목적지에서는 제외한다.
                 if (moveRange[x, y] && CanMoveTo(x, y))
-                    Paint(x, y);
+                    Paint(x, y, movePreviewColor);
             }
         }
     }
@@ -182,7 +291,7 @@ public class BattlePreview : MonoBehaviour
     }
 
     // 배열 범위 안에 있는 타일만 색칠
-    private void Paint(int x, int y)
+    private void Paint(int x, int y, Color color)
     {
         if (x < 0 || x >= map.Width ||
             y < 0 || y >= map.Height)
@@ -193,7 +302,7 @@ public class BattlePreview : MonoBehaviour
         if (tileFill[x, y] == null)
             return;
 
-        tileFill[x, y].color = movePreviewColor;
+        tileFill[x, y].color = color;
     }
 
     // 이전 이동 미리보기 색을 원래 타일 색으로 복원

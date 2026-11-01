@@ -48,8 +48,6 @@ public class Battle : MonoBehaviour
         HideActionUI();
         ShowWeaponUI();
         ChangeStep(Battle_Step.SelectWeapon);
-
-        battlePreview.PlayerAttackPreview();
     }
     public void Move_Player(int x, int y) // 배틀 프리뷰에서 이동위치 1,2,3,4 로 받음
     {
@@ -114,22 +112,6 @@ public class Battle : MonoBehaviour
     {
         WeaponUI.SetActive(false);
     }
-    private void Move_Up()
-    {
-        playerTransform.position += Vector3.up * map.TileHeightSize;
-    }
-    private void Move_Down()
-    {
-        playerTransform.position += Vector3.down * map.TileHeightSize;
-    }
-    private void Move_Right()
-    {
-        playerTransform.position += Vector3.right * map.TileWidthSize;
-    }
-    private void Move_Left()
-    {
-        playerTransform.position += Vector3.left * map.TileWidthSize;
-    }
     private void ChangeStep(Battle_Step nextStep)
     {
         currentStep = nextStep;
@@ -144,29 +126,42 @@ public class Battle : MonoBehaviour
     {
         if (CurrentStep != Battle_Step.SelectWeapon)
             return;
-
+        WeaponData weapon = GetWeapon(0, WeaponType.Sword); // 추후 강화 시스템 나오면 레벨 수정 
+        battlePreview.PlayerAttackPreview(weapon);
+        
         HideWeaponUI();
+        ChangeStep(Battle_Step.SelectAttack);
     }
     public void ChooseSpear()
     {
         if (CurrentStep != Battle_Step.SelectWeapon)
             return;
 
+        WeaponData weapon = GetWeapon(0, WeaponType.Spear); // 추후 강화 시스템 나오면 레벨 수정 
+        battlePreview.PlayerAttackPreview(weapon);
+
         HideWeaponUI();
+        ChangeStep(Battle_Step.SelectAttack);
     }
     public void ChooseGun()
     {
         if (CurrentStep != Battle_Step.SelectWeapon)
             return;
+        WeaponData weapon = GetWeapon(0, WeaponType.Gun);// 추후 강화 시스템 나오면 레벨 수정
+        battlePreview.PlayerAttackPreview(weapon);
 
         HideWeaponUI();
+        ChangeStep(Battle_Step.SelectAttack);
     }
     public void ChooseMagic()
     {
         if (CurrentStep != Battle_Step.SelectWeapon)
             return;
+        WeaponData weapon = GetWeapon(0, WeaponType.Magic);// 추후 강화 시스템 나오면 레벨 수정
+        battlePreview.PlayerAttackPreview(weapon);
 
         HideWeaponUI();
+        ChangeStep(Battle_Step.SelectAttack);
     }
     private WeaponData GetWeapon(int level ,WeaponType type)
     {
