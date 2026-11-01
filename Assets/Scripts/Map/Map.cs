@@ -114,8 +114,7 @@ public class Map : MonoBehaviour
         // 플레이어가 배치될 타일의 x, y를 무작위로 선택
         if (TryGetRandomPlayerTile(out int startX, out int startY))
         {
-            //SetPlayerTile(startX, startY);
-            SetPlayerTile(7, 7); // 나중에 바꾸기 
+            SetPlayerTile(startX, startY);
         }
         if(TryGetRandomEnemyTile(out int Ex, out int Ey))
         {

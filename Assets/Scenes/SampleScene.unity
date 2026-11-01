@@ -1478,7 +1478,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::enemy_movement
   battle: {fileID: 1731515876}
   map: {fileID: 241752802}
-  positionInTile: {x: 0.5, y: 0.5}
+  positionInTile: {x: 0, y: 0}
   ESize: 0.5
   player: {fileID: 838436034}
   attackChance: 0.3
@@ -4444,8 +4444,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Player
   battle: {fileID: 0}
   map: {fileID: 241752802}
-  positionInTile: {x: 0, y: 0}
-  PlayerSize: 1
+  positionInTile: {x: 0, y: 0.25}
+  PlayerSize: 2
   moveInSound: {fileID: 8300000, guid: 9ea7978f56fd37645932ece877843c14, type: 3}
   moveOutSound: {fileID: 8300000, guid: 9ea7978f56fd37645932ece877843c14, type: 3}
   moveVolume: 1
@@ -7838,7 +7838,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1485724596
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8258,6 +8258,7 @@ MonoBehaviour:
   battle: {fileID: 1731515876}
   map: {fileID: 241752802}
   movePreviewColor: {r: 0.24390352, g: 0.8207547, b: 0.3088057, a: 0.49803922}
+  attackPreviewColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &1735612260
 GameObject:
   m_ObjectHideFlags: 0
