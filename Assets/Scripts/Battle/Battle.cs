@@ -122,7 +122,35 @@ public class Battle : MonoBehaviour
         moverange = playerRangeData.moveRange;
         return moverange;
     }
-    public WeaponData GetWeapon(int level ,WeaponType type)
+    public void ChooseSword()
+    {
+        if (CurrentStep != Battle_Step.SelectWeapon)
+            return;
+
+        HideWeaponUI();
+    }
+    public void ChooseSpear()
+    {
+        if (CurrentStep != Battle_Step.SelectWeapon)
+            return;
+
+        HideWeaponUI();
+    }
+    public void ChooseGun()
+    {
+        if (CurrentStep != Battle_Step.SelectWeapon)
+            return;
+
+        HideWeaponUI();
+    }
+    public void ChooseMagic()
+    {
+        if (CurrentStep != Battle_Step.SelectWeapon)
+            return;
+
+        HideWeaponUI();
+    }
+    private WeaponData GetWeapon(int level ,WeaponType type)
     {
         switch (type)
         {
