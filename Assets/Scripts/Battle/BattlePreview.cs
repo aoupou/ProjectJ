@@ -72,19 +72,21 @@ public class BattlePreview : MonoBehaviour
     }
     public void PlayerMovePreview()
     {
-        if (map == null || !map.HasPlayerTile)
+        if (map == null)
             return;
+
         ResetPreviewColors();
+
+        if (!map.HasPlayerTile)
+            return;
+
         //var PlayerMovePower = battle.Moverange(); // 나중에 바꾸기 
         int PlayerMovePower = 5;
 
-        var playerX = map.PlayerTileX;
-        var playerY = map.PlayerTileY;
-        Vector2Int playerTile = new Vector2Int(playerX, playerY);
+        Vector2Int playerTile = new Vector2Int(map.PlayerTileX, map.PlayerTileY);
 
-        int neighborTileX = 0;
-        int neighborTileY = 0;
-        Vector2Int neighborTile = new Vector2Int(neighborTileX, neighborTileY);
+        if (!map.TryGetTile(playerTile.x, playerTile.y, out _))
+            return;
 
         Vector2Int[] directions =
         {
@@ -95,34 +97,44 @@ public class BattlePreview : MonoBehaviour
         };
 
         int[,] distance = new int[map.Width, map.Height];
-
-
         bool[,] isVisited = new bool [map.Width, map.Height];
-        isVisited[playerTile.x, playerTile.y] = true;
-
 
         Queue<Vector2Int> queue = new Queue<Vector2Int>();
-        
+
+        distance[playerTile.x, playerTile.y] = 0;
+        isVisited[playerTile.x, playerTile.y] = true;
         queue.Enqueue(playerTile); // eu1 
+
         while (queue.Count > 0)
         {
 
             Vector2Int startTile = queue.Dequeue();
-            distance[playerTile.x, playerTile.y] = 0;
+            int currentDistance = distance[startTile.x, startTile.y];
 
-            for (int directionsCount=0; directionsCount < directions.Length; directionsCount++)
+            // 이동력을 모두 사용한 타일에서는 더 탐색하지 않음.
+            if (currentDistance >= PlayerMovePower)
+                continue;
+
+            for (int i = 0; i < directions.Length; i++)
             {
-                neighborTile = startTile + directions[directionsCount];
-                distance[neighborTile.x, neighborTile.y] = distance[startTile.x, startTile.y]  + 1;
+                Vector2Int neighborTile = startTile + directions[i];
 
-                if ( distance[neighborTile.x,neighborTile.y] <= PlayerMovePower 
-                    && isVisited[neighborTile.x,neighborTile.y] == false 
-                    && map.[neighborTile.x,neighborTile.y] == true)
+                if(!map.TryGetTile(neighborTile.x, neighborTile.y, out TileData tile))
                 {
-                    isVisited[neighborTile.x,neighborTile.y] = true;
-                    Paint(neighborTile.x, neighborTile.y);
-                    queue.Enqueue(neighborTile);
+                    continue;
                 }
+
+                if (isVisited[neighborTile.x, neighborTile.y])
+                    continue;
+
+                if (!tile.Visitable || tile.CanPlayerGo || tile.OnEnemy)
+                    continue;
+                isVisited[neighborTile.x, neighborTile.y] = true;
+
+                distance[neighborTile.x, neighborTile.y] = currentDistance + 1;
+
+                Paint(neighborTile.x, neighborTile.y);
+                queue.Enqueue(neighborTile);
             }
         }
         //오늘의 목표 

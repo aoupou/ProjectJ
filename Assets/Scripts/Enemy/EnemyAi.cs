@@ -217,8 +217,7 @@ public class EnemyAi : MonoBehaviour
             {
                 neighborTile = startTile + directions[directionsCount];
 
-                if (map.CanMove(neighborTile.x, neighborTile.y) == true
-                    && isVisited[neighborTile.x, neighborTile.y] == false
+                if (!isVisited[neighborTile.x, neighborTile.y]
                     && distance1[startTile.x, startTile.y] + 1 <= moveRangePower)
                 {
                     distance1[neighborTile.x, neighborTile.y] = distance1[startTile.x, startTile.y] + 1;
