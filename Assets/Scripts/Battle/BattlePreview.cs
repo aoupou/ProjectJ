@@ -67,7 +67,15 @@ public class BattlePreview : MonoBehaviour
         if(Mouse.current.leftButton.wasPressedThisFrame && map.TryGetTileCoordinate(hit.collider, out int x, out int y))
         {
             if (battle.CurrentStep != Battle.Battle_Step.SelectDirection) return;
-            battle.Move_Player(x,y);
+            if (!map.IsValidTile(x, y)) return;
+            if (!map.TryGetTile(x, y, out TileData tile))
+            {
+                if (tile.Visitable)
+                {
+                    battle.Move_Player(x, y);
+                }
+            }
+            
         }
     }
     public void PlayerAttackPreview()
@@ -131,7 +139,7 @@ public class BattlePreview : MonoBehaviour
                 if (isVisited[neighborTile.x, neighborTile.y])
                     continue;
 
-                if (!tile.Visitable || tile.CanPlayerGo || tile.OnEnemy)
+                if (!tile.Visitable || !tile.CanPlayerGo || tile.OnEnemy)
                     continue;
                 isVisited[neighborTile.x, neighborTile.y] = true;
 

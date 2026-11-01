@@ -114,7 +114,7 @@ public class Map : MonoBehaviour
         if (TryGetRandomPlayerTile(out int startX, out int startY))
         {
             //SetPlayerTile(startX, startY);
-            SetPlayerTile(1, 1); // 나중에 바꾸기 
+            SetPlayerTile(7, 7); // 나중에 바꾸기 
         }
         if(TryGetRandomEnemyTile(out int Ex, out int Ey))
         {
@@ -236,7 +236,7 @@ public class Map : MonoBehaviour
         return true;
     }
 
-    private bool IsValidTile(int x, int y) //Valid 유효한
+    public bool IsValidTile(int x, int y) //Valid 유효한
     {
         return mapData != null &&
                x >= 0 && x < Width &&
