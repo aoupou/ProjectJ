@@ -45,7 +45,7 @@ public class Battle : MonoBehaviour
     }
     public void Choose_Attack()
     {
-        HideActionUI();
+        ShowWeaponUI();
         ChangeStep(Battle_Step.SelectWeapon);
 
         battlePreview.PlayerAttackPreview();
