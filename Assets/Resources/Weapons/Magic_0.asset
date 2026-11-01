@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d8610c622cb0494fb791012d9f96213, type: 3}
+  m_Name: Magic_0
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponData
+  displayName: "\uC775\uC2A4\uD50C\uB85C\uC804"
+  weaponType: 0
+  level: 0
+  hitP: 100
+  weaponRD:
+  - cell: {x: 0, y: 0}
+    damage: 3
+  - cell: {x: 0, y: 1}
+    damage: 3
+  - cell: {x: 0, y: -1}
+    damage: 3
+  - cell: {x: 1, y: 0}
+    damage: 3
+  - cell: {x: -1, y: 0}
+    damage: 3
+  upgradeP: 0
+  upgradeGold: 0
+  weaponText: "\uAC15\uB825\uD55C \uB9C8\uBC95\uC744 \uC0AC\uC6A9\uD558\uC5EC, \uC801\uC5D0\uAC8C
+    \uB9C9\uB300\uD55C \uD53C\uD574\uB97C \uC785\uD799\uB2C8\uB2E4."
+  weaponEffects:
+  - effectType: 1
+    value: 1
+  vfx: {fileID: 0}
+  icon: {fileID: 0}

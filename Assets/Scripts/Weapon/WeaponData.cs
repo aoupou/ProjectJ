@@ -13,10 +13,6 @@ public class WeaponData : ScriptableObject
     public string displayName;
     [Tooltip("무기 종류")]
     public WeaponType weaponType;
-    [Tooltip("공격 데미지")]
-    public int damage;
-    [Tooltip("공격 범위 칸")]
-    public List<Vector2Int> range = new List<Vector2Int>();
     [Tooltip("무기 강화 단계")]
     public int level;
     [Tooltip("명중률 (0~100)")]

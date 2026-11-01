@@ -43,6 +43,13 @@ public class Battle : MonoBehaviour
         battlePreview.PlayerMovePreview();
         // 배틀 프리뷰의 이동위치 보는 코드와 연결
     }
+    public void Choose_Attack()
+    {
+        HideActionUI();
+        ChangeStep(Battle_Step.SelectWeapon);
+
+        battlePreview.PlayerAttackPreview();
+    }
     public void Move_Player(int x, int y) // 배틀 프리뷰에서 이동위치 1,2,3,4 로 받음
     {
         if (CurrentStep != Battle_Step.SelectDirection)
@@ -115,5 +122,27 @@ public class Battle : MonoBehaviour
         moverange = playerRangeData.moveRange;
         return moverange;
     }
+    public WeaponData GetWeapon(int level ,WeaponType type)
+    {
+        switch (type)
+        {
+            case WeaponType.Sword:
+                WeaponData Sword = WeaponDatabase.Get("Sword_" + level);
+                return Sword;
 
+            case WeaponType.Spear:
+                WeaponData Spear = WeaponDatabase.Get("Spear_" + level);
+                return Spear;
+            
+            case WeaponType.Gun:
+                WeaponData Gun = WeaponDatabase.Get("Gun_" + level);
+                return Gun;
+            
+            case WeaponType.Magic:
+                WeaponData Magic = WeaponDatabase.Get("Magic_" + level);
+                return Magic;
+        }
+        
+        return null;
+    }
 }

@@ -110,8 +110,6 @@ public class EnemyAi : MonoBehaviour
         return new Vector2Int(0, 0);
     }
 
-
-
     void FindAbleSkill()
     {
         ableEnemySkills.Clear();

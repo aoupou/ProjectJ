@@ -47,7 +47,7 @@ public static class WeaponDatabase
         }
     }
 
-    // 같은 종류(weaponType)인 무기만 모아서 돌려준다 (예: Magic → Magic_1, Magic_2)
+    // 같은 종류(weaponType)인 무기만 모아서 돌려준다 (예: Magic → Magic_0, Magic_1)
     public static List<WeaponData> OfType(WeaponType type)
     {
         Load();

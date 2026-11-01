@@ -313,15 +313,10 @@ public class Old_Battle : MonoBehaviour
         cells.Clear();
         foreach (WeaponData weapon in WeaponDatabase.OfType(selectweapon))
         {
-            foreach (Vector2Int cell in weapon.range)
+            foreach (AttackCell attackCell in weapon.weaponRD)
             {
-                Vector2Int rotated = Rotate(cell, direction);
-
-                // 같은 종류 무기끼리 범위가 겹치면 안 됨 → 무기 데이터 range 다시 설정
-                if (cells.ContainsKey(rotated))
-                    Debug.LogWarning($"[무기] {selectweapon} 범위 겹침: {weapon.name}의 {cell}");
-
-                cells[rotated] = weapon.damage;
+                Vector2Int rotated = Rotate(attackCell.cell, direction);
+                cells[rotated] = attackCell.damage;
             }
         }
         tileColor.ShowRange(player.position, cells);

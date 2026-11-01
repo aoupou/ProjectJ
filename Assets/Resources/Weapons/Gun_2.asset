@@ -12,9 +12,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d8610c622cb0494fb791012d9f96213, type: 3}
   m_Name: Gun_2
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
-  displayName: "\uCD1D"
+  displayName: "\uBCF5\uC5B4 \uCD1D"
   weaponType: 2
-  damage: 2
-  range:
-  - {x: 0, y: 1}
-  - {x: 0, y: 2}
+  level: 2
+  hitP: 100
+  weaponRD:
+  - cell: {x: 0, y: 2}
+    damage: 1
+  - cell: {x: -1, y: 3}
+    damage: 1
+  - cell: {x: 0, y: 3}
+    damage: 1
+  - cell: {x: 1, y: 3}
+    damage: 1
+  - cell: {x: -2, y: 4}
+    damage: 1
+  - cell: {x: -1, y: 4}
+    damage: 1
+  - cell: {x: 0, y: 4}
+    damage: 1
+  - cell: {x: 1, y: 4}
+    damage: 1
+  - cell: {x: 2, y: 4}
+    damage: 1
+  upgradeP: 10
+  upgradeGold: 0
+  weaponText: "\uBCF5\uC5B4\uB97C \uBC1C\uC0AC\uD574 \uC801\uC5D0\uAC8C \uB370\uBBF8\uC9C0\uB97C
+    \uC785\uD799\uB2C8\uB2E4. \uC801\uC5D0\uAC8C \uB9F9\uB3C5 \uC0C1\uD0DC\uC774\uC0C1\uC744
+    \uC801\uC6A9\uD569\uB2C8\uB2E4."
+  weaponEffects:
+  - effectType: 0
+    value: 1
+  vfx: {fileID: 0}
+  icon: {fileID: 0}

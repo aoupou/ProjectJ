@@ -70,18 +70,21 @@ public class BattlePreview : MonoBehaviour
             battle.Move_Player(x,y);
         }
     }
+    public void PlayerAttackPreview()
+    {
+        ResetPreviewColors();
+
+    }
     public void PlayerMovePreview()
     {
         if (map == null)
             return;
 
         ResetPreviewColors();
-
         if (!map.HasPlayerTile)
             return;
 
-        //var PlayerMovePower = battle.Moverange(); // 나중에 바꾸기 
-        int PlayerMovePower = 5;
+        var PlayerMovePower = battle.Moverange();
 
         Vector2Int playerTile = new Vector2Int(map.PlayerTileX, map.PlayerTileY);
 
@@ -98,6 +101,7 @@ public class BattlePreview : MonoBehaviour
 
         int[,] distance = new int[map.Width, map.Height];
         bool[,] isVisited = new bool [map.Width, map.Height];
+
 
         Queue<Vector2Int> queue = new Queue<Vector2Int>();
 
@@ -148,10 +152,6 @@ public class BattlePreview : MonoBehaviour
         // isVisited -> false -> 탐색 시작 
         // playertile을 새롭게 탐색할 타일로 교체 -> 위 행동 반복 
     }
-
-
-
-
     public void AddTile(
         int x,
         int y,

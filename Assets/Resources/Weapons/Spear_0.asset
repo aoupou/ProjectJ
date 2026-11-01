@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d8610c622cb0494fb791012d9f96213, type: 3}
+  m_Name: Spear_0
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponData
+  displayName: "\uAC1C\uCA4C\uB294 \uB098\uBB34"
+  weaponType: 3
+  level: 0
+  hitP: 100
+  weaponRD:
+  - cell: {x: 0, y: 1}
+    damage: 1
+  - cell: {x: 0, y: 2}
+    damage: 1
+  - cell: {x: 0, y: 3}
+    damage: 1
+  upgradeP: 0
+  upgradeGold: 0
+  weaponText: "\uB098\uBB34\uB97C \uCC14\uB7EC \uC801\uC5D0\uAC8C \uB370\uBBF8\uC9C0\uB97C
+    \uC785\uD799\uB2C8\uB2E4. 10%\uC758 \uD655\uB960\uB85C \uBB34\uC791\uC704 \uC704\uCE58\uC5D0
+    \uC0AC\uACFC\uB97C \uC0DD\uC131\uD569\uB2C8\uB2E4."
+  weaponEffects: []
+  vfx: {fileID: 0}
+  icon: {fileID: 0}
