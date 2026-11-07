@@ -1,4 +1,4 @@
-using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -11,7 +11,7 @@ public class EnchantManager : MonoBehaviour
     [SerializeField] private TMP_Text EnchantName;
     [SerializeField] private GameObject Success;
     [SerializeField] private GameObject Fail;
-
+    private Coroutine enchantResultRoutine;
 
     void Start()
     {
@@ -56,6 +56,30 @@ public class EnchantManager : MonoBehaviour
     {
         ShowSellectedItemUI();
         EnchantName.text = "체력";
+    }
+
+
+    public void PushEnchant()
+    {
+        if (enchantResultRoutine != null)
+            StopCoroutine(enchantResultRoutine);
+
+        enchantResultRoutine = StartCoroutine(ShowEnchantResult());
+    }
+
+    private IEnumerator ShowEnchantResult()
+    {
+        int enchantChance = UnityEngine.Random.Range(0, 10);
+        bool isSuccess = enchantChance > 4;
+
+        Success.SetActive(isSuccess);
+        Fail.SetActive(!isSuccess);
+
+        yield return new WaitForSeconds(3f);
+
+        Success.SetActive(false);
+        Fail.SetActive(false);
+        enchantResultRoutine = null;
     }
     private void ShowPlusUI()
     {
