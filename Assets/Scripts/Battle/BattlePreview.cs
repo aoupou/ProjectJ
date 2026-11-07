@@ -41,7 +41,7 @@ public class BattlePreview : MonoBehaviour
         foreach (AttackCell attackCell in currentWeapon.weaponRD)
         {
             if (currentWeapon.weaponType == WeaponType.Magic)
-                tiles.Add(attackCell.cell);
+                tiles.Add(new Vector2Int(lastTileX, lastTileY) + GetMouseDirection(attackCell.cell)); // 마법은 마우스 칸 기준
             else
                 tiles.Add(playerTile + GetMouseDirection(attackCell.cell));
         }
