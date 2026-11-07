@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 
 public class Stage_change : MonoBehaviour
 {
-    [SerializeField] private Stg stg_num; // 타이틀은 0 스테이지 는 각각 1~4 스테체인지 5 상점 6 7,8 각각 클리어 게임오버
+    [SerializeField] private Stg stg_num; // 타이틀은 0 스테이지 는 각각 1~4 스테체인지 5 상점 6 7,8 각각 클리어 게임오버 9 대장간
     public enum Stg  // 스테이지 정보
 
     {
@@ -17,6 +17,7 @@ public class Stage_change : MonoBehaviour
         shop,
         stg_CLR,
         Game_Over,
+        Forge,
         Nooooo = 14,
         Quit = 15,
         Sample = 16,
@@ -93,6 +94,11 @@ public class Stage_change : MonoBehaviour
             case Stg.Game_Over:
                 {
                     SceneManager.LoadScene("Game_Over");
+                    break;
+                }
+            case Stg.Forge:
+                {
+                    SceneManager.LoadScene("Forge");
                     break;
                 }
             case Stg.Quit:

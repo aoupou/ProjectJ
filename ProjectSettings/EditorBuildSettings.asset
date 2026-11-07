@@ -11,9 +11,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/stage_choice.unity
     guid: 87595a7388ca4a045b9947e1f0335b42
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/stg_1.unity
     guid: 296759091d934b442a1c412289d3fb57
+  - enabled: 1
+    path: Assets/Scenes/Forge.unity
+    guid: b9f37d77f9719ad43a1b144da6eab375
   - enabled: 1
     path: Assets/Scenes/shop.unity
     guid: b5bafda648d9dc74ead34c6c0041a4ae

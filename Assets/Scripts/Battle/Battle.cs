@@ -49,7 +49,7 @@ public class Battle : MonoBehaviour
         ShowWeaponUI();
         ChangeStep(Battle_Step.SelectWeapon);
     }
-    public void Move_Player(int x, int y) // 배틀 프리뷰에서 이동위치 1,2,3,4 로 받음
+    public void Move_Player(int x, int y) 
     {
         if (CurrentStep != Battle_Step.SelectDirection)
             return;
