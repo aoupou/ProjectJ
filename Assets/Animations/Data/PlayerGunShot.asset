@@ -21,4 +21,4 @@ MonoBehaviour:
   - {fileID: -8419253286486682768, guid: 9f46ab4982856074d88279642ad64592, type: 3}
   - {fileID: -5549221104825192369, guid: 9f46ab4982856074d88279642ad64592, type: 3}
   framesPerSecond: 14
-  loop: 1
+  loop: 0

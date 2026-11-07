@@ -1381,8 +1381,9 @@ GameObject:
   - component: {fileID: 429796456}
   - component: {fileID: 429796457}
   - component: {fileID: 429796458}
+  - component: {fileID: 429796459}
   m_Layer: 0
-  m_Name: enemy_imsi
+  m_Name: enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1402,8 +1403,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::enemy_movement
   battle: {fileID: 1731515876}
   map: {fileID: 241752802}
-  positionInTile: {x: 0, y: 0}
-  ESize: 1
+  positionInTile: {x: 0, y: 0.25}
+  ESize: 2
   player: {fileID: 838436034}
   attackChance: 0.3
 --- !u!212 &429796454
@@ -1548,6 +1549,19 @@ MonoBehaviour:
   characterData: {fileID: 11400000, guid: 1a9ced4db0f580b40abfc2f333551492, type: 2}
   map: {fileID: 241752802}
   enemy: {fileID: 429796452}
+--- !u!114 &429796459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 429796452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5526a953dfc39e445afcc38dc212b710, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpriteAnimator
+  collection: {fileID: 11400000, guid: f269a3b6a49b0ee45954810e0842e7b6, type: 2}
 --- !u!1 &456276894
 GameObject:
   m_ObjectHideFlags: 0

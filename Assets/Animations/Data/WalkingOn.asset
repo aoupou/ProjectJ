@@ -23,4 +23,4 @@ MonoBehaviour:
   - {fileID: 1914676849, guid: 28b25b5cb95ea0f4781e441eb58289c6, type: 3}
   - {fileID: 890802697, guid: 28b25b5cb95ea0f4781e441eb58289c6, type: 3}
   framesPerSecond: 16
-  loop: 1
+  loop: 0

@@ -41,7 +41,7 @@ public class BattlePreview : MonoBehaviour
         foreach (AttackCell attackCell in currentWeapon.weaponRD)
         {
             if (currentWeapon.weaponType == WeaponType.Magic)
-                tiles.Add(new Vector2Int(lastTileX, lastTileY) + GetMouseDirection(attackCell.cell)); // 마법은 마우스 칸 기준
+                tiles.Add(attackCell.cell);
             else
                 tiles.Add(playerTile + GetMouseDirection(attackCell.cell));
         }
@@ -143,11 +143,10 @@ public class BattlePreview : MonoBehaviour
             foreach (AttackCell attackCell in weapon.weaponRD)
             {
                 Vector2Int targetTile = attackCell.cell;
-                Vector2Int curruentTile = new Vector2Int (lastTileX, lastTileY);
-                Vector2Int getMousePosition = GetMouseDirection(targetTile) + curruentTile;
-
-                Paint(getMousePosition.x, getMousePosition.y, attackPreviewColor);
+                // 채호님이 알아서... 
+                Paint(targetTile.x, targetTile.y, attackPreviewColor);
             }
+            
         }
 
         else
@@ -177,9 +176,6 @@ public class BattlePreview : MonoBehaviour
 
     private void RefreshAttackPreview()
     {
-        int previousX = lastTileX;
-        int previousY = lastTileY;
-
         UpdateMouseTile();
 
         if (battle.CurrentStep != Battle.Battle_Step.SelectAttack)
@@ -187,21 +183,12 @@ public class BattlePreview : MonoBehaviour
         if (currentWeapon == null)
             return;
 
-        if (currentWeapon.weaponType == WeaponType.Magic)
-        {
-            if (lastTileX != previousX || lastTileY != previousY)
-                PlayerAttackPreview(currentWeapon);
-
-            return;
-        }
-        
         Vector2Int direction = GetMouseDirection(Vector2Int.up);
         if (direction == lastDirection)
             return;
 
         lastDirection = direction;
         PlayerAttackPreview(currentWeapon);
-
     }
 
 
@@ -262,7 +249,6 @@ public class BattlePreview : MonoBehaviour
             Vector2Int startTile = queue.Dequeue();
             int currentDistance = distance[startTile.x, startTile.y];
 
-            // 이동력을 모두 사용한 타일에서는 더 탐색하지 않음.
             if (currentDistance >= PlayerMovePower)
                 continue;
 
@@ -278,7 +264,6 @@ public class BattlePreview : MonoBehaviour
                 if (isVisited[neighborTile.x, neighborTile.y])
                     continue;
 
-                // 적은 탐색을 막지 않는다. 지형의 이동 불가 설정만 검사한다.
                 if (!tile.Visitable || !tile.CanPlayerGo)
                     continue;
                 isVisited[neighborTile.x, neighborTile.y] = true;
@@ -303,7 +288,6 @@ public class BattlePreview : MonoBehaviour
         {
             for (int y = 0; y < moveRange.GetLength(1); y++)
             {
-                // 적 타일은 탐색에 포함하지만 색칠과 이동 목적지에서는 제외한다.
                 if (moveRange[x, y] && CanMoveTo(x, y))
                     Paint(x, y, movePreviewColor);
             }
@@ -320,8 +304,6 @@ public class BattlePreview : MonoBehaviour
         tileText[x, y] = tileDamage;
         originalTileColors[x, y] = fill.color;
     }
-
-    // 배열 범위 안에 있는 타일만 색칠
     private void Paint(int x, int y, Color color)
     {
         if (x < 0 || x >= map.Width ||
@@ -336,7 +318,6 @@ public class BattlePreview : MonoBehaviour
         tileFill[x, y].color = color;
     }
 
-    // 이전 이동 미리보기 색을 원래 타일 색으로 복원
     private void ResetPreviewColors()
     {
         if (tileFill == null)
