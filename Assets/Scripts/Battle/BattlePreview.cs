@@ -143,10 +143,11 @@ public class BattlePreview : MonoBehaviour
             foreach (AttackCell attackCell in weapon.weaponRD)
             {
                 Vector2Int targetTile = attackCell.cell;
-                // 채호님이 알아서... 
-                Paint(targetTile.x, targetTile.y, attackPreviewColor);
+                Vector2Int curruentTile = new Vector2Int (lastTileX, lastTileY);
+                Vector2Int getMousePosition = GetMouseDirection(targetTile) + curruentTile;
+
+                Paint(getMousePosition.x, getMousePosition.y, attackPreviewColor);
             }
-            
         }
 
         else
@@ -176,6 +177,9 @@ public class BattlePreview : MonoBehaviour
 
     private void RefreshAttackPreview()
     {
+        int previousX = lastTileX;
+        int previousY = lastTileY;
+
         UpdateMouseTile();
 
         if (battle.CurrentStep != Battle.Battle_Step.SelectAttack)
@@ -183,12 +187,21 @@ public class BattlePreview : MonoBehaviour
         if (currentWeapon == null)
             return;
 
+        if (currentWeapon.weaponType == WeaponType.Magic)
+        {
+            if (lastTileX != previousX || lastTileY != previousY)
+                PlayerAttackPreview(currentWeapon);
+
+            return;
+        }
+        
         Vector2Int direction = GetMouseDirection(Vector2Int.up);
         if (direction == lastDirection)
             return;
 
         lastDirection = direction;
         PlayerAttackPreview(currentWeapon);
+
     }
 
 
