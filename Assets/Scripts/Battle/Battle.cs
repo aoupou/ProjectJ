@@ -1,14 +1,17 @@
 using UnityEngine;
+using System.Collections;
 
 public class Battle : MonoBehaviour
 {
     [SerializeField] private Transform playerTransform;
+    [SerializeField] private SpriteAnimator spriteAnimator; 
     [SerializeField] private Map map;
     [SerializeField] private GameObject ActionUI;
     [SerializeField] private GameObject WeaponUI;
     [SerializeField] private Transform mapsponerTransform;
     [SerializeField] private BattlePreview battlePreview;
     [SerializeField] private Battle_Step currentStep = Battle_Step.SelectAction;
+
     public Battle_Step CurrentStep => currentStep;
     public int moverange;
     CharacterData playerRangeData;
@@ -41,7 +44,6 @@ public class Battle : MonoBehaviour
         HideActionUI();
         ChangeStep(Battle_Step.SelectDirection);
         battlePreview.PlayerMovePreview();
-        // 배틀 프리뷰의 이동위치 보는 코드와 연결
     }
     public void Choose_Attack()
     {
@@ -55,7 +57,6 @@ public class Battle : MonoBehaviour
             return;
         if (map == null || playerTransform == null || battlePreview == null)
             return;
-
         if (!battlePreview.CanMoveTo(x, y))
             return;
 
@@ -65,8 +66,6 @@ public class Battle : MonoBehaviour
             Debug.LogError("playerTransform에 Player 컴포넌트가 없습니다.");
             return;
         }
-        // 배틀 프리뷰에서 받은 목적지 확인
-        // 이동가능 여부 판단 (장애물 생기면)
 
         if(!map.TryGetTileWorldPosition(x,y, out Vector3 worldPosition))
         {
@@ -76,12 +75,27 @@ public class Battle : MonoBehaviour
         if (!map.SetPlayerTile(x, y))
             return;
 
+        MoveAni(player.GetPositionOnTile(worldPosition));
+
         battlePreview.ClearMovePreview();
-        playerTransform.position = player.GetPositionOnTile(worldPosition);
 
+    }
+    public void MoveAni(Vector3 moveTile)
+    {
+        StartCoroutine(CoroutineMove(moveTile));
+    }
+    private IEnumerator CoroutineMove(Vector3 moveTile)
+    {
+        spriteAnimator.SetState("WalkingOn", true);
+        yield return new WaitForSeconds(spriteAnimator.Duration);
 
-        // 배틀 쇼의 애니메이션 재생 코드와 연결
-        Finish_Anim(); // 임시로 턴 종료 시키지만, 나중에 적 행동과 연결지어야 함
+        playerTransform.position = moveTile;
+         
+        spriteAnimator.SetState("WalkingOff", true);
+        yield return new WaitForSeconds(spriteAnimator.Duration);
+
+        spriteAnimator.SetState("Idle", true);
+        Finish_Anim();
     }
     public void Finish_Anim() // 애니메이션 재생 종료 후 실행
     {

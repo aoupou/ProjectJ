@@ -6611,6 +6611,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Battle
   playerTransform: {fileID: 838436030}
+  spriteAnimator: {fileID: 838436035}
   map: {fileID: 241752802}
   ActionUI: {fileID: 1801941143}
   WeaponUI: {fileID: 1485724595}
