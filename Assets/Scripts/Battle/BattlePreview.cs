@@ -58,7 +58,6 @@ public class BattlePreview : MonoBehaviour
             !map.TryGetTileCoordinate(hit.collider, out int x, out int y))
             return;
 
-        // Recalculate so changed obstacles and movement power are respected.
         PlayerMovePreview();
         if (!CanMoveTo(x, y))
             return;
@@ -193,7 +192,6 @@ public class BattlePreview : MonoBehaviour
         ResetPreviewColors();
     }
 
-    // Calculate reachability without changing any visuals.
     private bool[,] CalculateMoveRange()
     {
         if (map == null || battle == null || !map.HasPlayerTile)
@@ -256,12 +254,10 @@ public class BattlePreview : MonoBehaviour
                 queue.Enqueue(neighborTile);
             }
         }
-        // The starting tile is visited during BFS but is not a destination.
         isVisited[playerTile.x, playerTile.y] = false;
         return isVisited;
     }
 
-    // Visuals only: display the calculated movement range.
     private void ShowMovePreview(bool[,] moveRange)
     {
         ResetPreviewColors();
