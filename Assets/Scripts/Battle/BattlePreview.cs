@@ -26,6 +26,28 @@ public class BattlePreview : MonoBehaviour
     private int lastTileX;
     private int lastTileY;
 
+    // 공격 확정 때 Battle이 읽어감: 지금 고른 무기, 마우스 기준 공격 방향(위/아래/오른/왼 한 칸)
+    public WeaponData CurrentWeapon => currentWeapon;
+    public Vector2Int AttackDirection => GetMouseDirection(Vector2Int.up);
+
+    // 지금 빨갛게 칠해지는 공격 범위 칸들 (PlayerAttackPreview와 같은 계산)
+    public List<Vector2Int> GetAttackTiles()
+    {
+        List<Vector2Int> tiles = new List<Vector2Int>();
+        if (currentWeapon == null)
+            return tiles;
+
+        Vector2Int playerTile = new Vector2Int(map.PlayerTileX, map.PlayerTileY);
+        foreach (AttackCell attackCell in currentWeapon.weaponRD)
+        {
+            if (currentWeapon.weaponType == WeaponType.Magic)
+                tiles.Add(attackCell.cell);
+            else
+                tiles.Add(playerTile + GetMouseDirection(attackCell.cell));
+        }
+        return tiles;
+    }
+
     private void Awake()
     {
         if (map == null)
