@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7049e73e6b218b8489a72255e63547a2, type: 3}
   m_Name: MapData
   m_EditorClassIdentifier: Assembly-CSharp::MapData
-  width: 5
-  height: 5
+  width: 10
+  height: 10
   tiles:
   - x: 0
     y: 0
@@ -55,6 +55,46 @@ MonoBehaviour:
     CanEnemyGo: 1
     CanPlayerGo: 1
     Visitable: 1
+  - x: 5
+    y: 0
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 6
+    y: 0
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 7
+    y: 0
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 8
+    y: 0
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 9
+    y: 0
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
   - x: 0
     y: 1
     OnPlayer: 0
@@ -95,6 +135,46 @@ MonoBehaviour:
     CanEnemyGo: 1
     CanPlayerGo: 1
     Visitable: 1
+  - x: 5
+    y: 1
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 6
+    y: 1
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 7
+    y: 1
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 8
+    y: 1
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 9
+    y: 1
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
   - x: 0
     y: 2
     OnPlayer: 0
@@ -135,6 +215,46 @@ MonoBehaviour:
     CanEnemyGo: 1
     CanPlayerGo: 1
     Visitable: 1
+  - x: 5
+    y: 2
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 6
+    y: 2
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 7
+    y: 2
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 8
+    y: 2
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 9
+    y: 2
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
   - x: 0
     y: 3
     OnPlayer: 0
@@ -175,6 +295,46 @@ MonoBehaviour:
     CanEnemyGo: 1
     CanPlayerGo: 1
     Visitable: 1
+  - x: 5
+    y: 3
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 6
+    y: 3
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 7
+    y: 3
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 8
+    y: 3
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 9
+    y: 3
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
   - x: 0
     y: 4
     OnPlayer: 0
@@ -209,6 +369,446 @@ MonoBehaviour:
     Visitable: 1
   - x: 4
     y: 4
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 5
+    y: 4
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 6
+    y: 4
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 7
+    y: 4
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 8
+    y: 4
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 9
+    y: 4
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 0
+    y: 5
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 1
+    y: 5
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 2
+    y: 5
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 3
+    y: 5
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 4
+    y: 5
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 5
+    y: 5
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 6
+    y: 5
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 7
+    y: 5
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 8
+    y: 5
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 9
+    y: 5
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 0
+    y: 6
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 1
+    y: 6
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 2
+    y: 6
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 3
+    y: 6
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 4
+    y: 6
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 5
+    y: 6
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 6
+    y: 6
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 7
+    y: 6
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 8
+    y: 6
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 9
+    y: 6
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 0
+    y: 7
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 1
+    y: 7
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 2
+    y: 7
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 3
+    y: 7
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 4
+    y: 7
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 5
+    y: 7
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 6
+    y: 7
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 7
+    y: 7
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 8
+    y: 7
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 9
+    y: 7
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 0
+    y: 8
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 1
+    y: 8
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 2
+    y: 8
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 3
+    y: 8
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 4
+    y: 8
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 5
+    y: 8
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 6
+    y: 8
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 7
+    y: 8
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 8
+    y: 8
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 9
+    y: 8
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 0
+    y: 9
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 1
+    y: 9
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 2
+    y: 9
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 3
+    y: 9
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 4
+    y: 9
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 5
+    y: 9
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 6
+    y: 9
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 7
+    y: 9
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 8
+    y: 9
+    OnPlayer: 0
+    OnEnemy: 0
+    OnApple: 0
+    CanEnemyGo: 1
+    CanPlayerGo: 1
+    Visitable: 1
+  - x: 9
+    y: 9
     OnPlayer: 0
     OnEnemy: 0
     OnApple: 0

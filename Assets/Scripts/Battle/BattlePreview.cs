@@ -41,7 +41,7 @@ public class BattlePreview : MonoBehaviour
         foreach (AttackCell attackCell in currentWeapon.weaponRD)
         {
             if (currentWeapon.weaponType == WeaponType.Magic)
-                tiles.Add(attackCell.cell);
+                tiles.Add(new Vector2Int(lastTileX, lastTileY) + GetMouseDirection(attackCell.cell)); // 마법은 마우스 칸 기준
             else
                 tiles.Add(playerTile + GetMouseDirection(attackCell.cell));
         }
@@ -143,10 +143,11 @@ public class BattlePreview : MonoBehaviour
             foreach (AttackCell attackCell in weapon.weaponRD)
             {
                 Vector2Int targetTile = attackCell.cell;
-                // 채호님이 알아서... 
-                Paint(targetTile.x, targetTile.y, attackPreviewColor);
+                Vector2Int curruentTile = new Vector2Int (lastTileX, lastTileY);
+                Vector2Int getMousePosition = GetMouseDirection(targetTile) + curruentTile;
+
+                Paint(getMousePosition.x, getMousePosition.y, attackPreviewColor);
             }
-            
         }
 
         else
@@ -176,12 +177,23 @@ public class BattlePreview : MonoBehaviour
 
     private void RefreshAttackPreview()
     {
+        int previousX = lastTileX;
+        int previousY = lastTileY;
+
         UpdateMouseTile();
 
         if (battle.CurrentStep != Battle.Battle_Step.SelectAttack)
             return;
         if (currentWeapon == null)
             return;
+
+        if (currentWeapon.weaponType == WeaponType.Magic)
+        {
+            if (lastTileX != previousX || lastTileY != previousY)
+                PlayerAttackPreview(currentWeapon);
+
+            return;
+        }
 
         Vector2Int direction = GetMouseDirection(Vector2Int.up);
         if (direction == lastDirection)

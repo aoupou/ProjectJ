@@ -6551,6 +6551,7 @@ GameObject:
   - component: {fileID: 1731515874}
   - component: {fileID: 1731515876}
   - component: {fileID: 1731515877}
+  - component: {fileID: 1731515878}
   m_Layer: 0
   m_Name: BattleManager
   m_TagString: Untagged
@@ -6631,6 +6632,7 @@ MonoBehaviour:
   WeaponUI: {fileID: 1485724595}
   mapsponerTransform: {fileID: 762981257}
   battlePreview: {fileID: 1731515877}
+  battleShow: {fileID: 1731515878}
   currentStep: 0
   moverange: 0
 --- !u!114 &1731515877
@@ -6653,6 +6655,26 @@ MonoBehaviour:
   map: {fileID: 241752802}
   movePreviewColor: {r: 0.24390352, g: 0.8207547, b: 0.3088057, a: 0.49803922}
   attackPreviewColor: {r: 1, g: 0, b: 0, a: 1}
+--- !u!114 &1731515878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1731515871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7bbbc7a8e28deec4f9dbc44c8a5d2ef5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BattleShow
+  spriteAnimator: {fileID: 0}
+  battle: {fileID: 0}
+  weaponEffectCollection: {fileID: 0}
+  swordEffectSize: 1
+  spearEffectSize: 1
+  gunEffectSize: 1
+  magicEffectSize: 0.8
+  weaponEffectSortingOrder: 100
 --- !u!1 &1735612260
 GameObject:
   m_ObjectHideFlags: 0
