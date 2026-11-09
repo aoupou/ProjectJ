@@ -7,9 +7,9 @@ public class UI_tojo : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     [SerializeField] private GameObject ui;
     [SerializeField] private TMP_Text map_size;
-    [SerializeField] private TMP_Text boss_name;
     [SerializeField] private Image stageImage;
     [SerializeField] private Stage_sellect stg_info;
+    public Stage_sellect stageSellect => stg_info;
     public enum Stage_sellect
     {
         stage1 = 0,
@@ -40,6 +40,7 @@ public class UI_tojo : MonoBehaviour
             }
             case Stage_sellect.stage4:
             {
+                    OpenStage4();
                     break;
             }
             case Stage_sellect.only_UI:
@@ -54,23 +55,30 @@ public class UI_tojo : MonoBehaviour
             }
         }
     }
+    public void StageTo(Stage_sellect destination)
+    {
+        stg_info = destination;
+        UI_tojoda();
+    }
     private void OpenStage1()
     {
         ui.SetActive(true);
-        map_size.text = "Map size 5X5";
-        boss_name.text = "boss name";
+        map_size.text = "스테이지1 정보";
     }
     private void OpenStage2()
     {
         ui.SetActive(true);
-        map_size.text = "Map size 8X8";
-        boss_name.text = "good";
+        map_size.text = "스테이지2 정보";
     }
     private void OpenStage3()
     {
         ui.SetActive(true);
-        map_size.text = "Map size 5X5";
-        boss_name.text = "boss name";
+        map_size.text = "스테이지3 정보";
+    }
+    private void OpenStage4()
+    {
+        ui.SetActive(true);
+        map_size.text = "스테이지4 정보";
     }
     private void Only_UI()
     {
