@@ -1,23 +1,22 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using System.Collections;
-using System.Collections.Generic;
 
 public class Battle : MonoBehaviour
 {
     [SerializeField] private Transform playerTransform;
     [SerializeField] private SpriteAnimator spriteAnimator; 
+    [SerializeField] private BattleShow battleShow;
     [SerializeField] private Map map;
     [SerializeField] private GameObject ActionUI;
     [SerializeField] private GameObject WeaponUI;
     [SerializeField] private Transform mapsponerTransform;
     [SerializeField] private BattlePreview battlePreview;
-    [SerializeField] private BattleShow battleShow; // 공격 연출 담당 (비워두면 같은 오브젝트에서 찾거나 붙임)
     [SerializeField] private Battle_Step currentStep = Battle_Step.SelectAction;
 
+
+    public WeaponData selectWeapon;
+
     public Battle_Step CurrentStep => currentStep;
-    public Map BattleMap => map;                     // BattleShow가 연출 위치 계산에 씀
-    public Transform PlayerTransform => playerTransform;
     public int moverange;
     CharacterData playerRangeData;
     public enum Battle_Step
@@ -32,26 +31,11 @@ public class Battle : MonoBehaviour
     public void Awake()
     {
         Moverange();
-
-        if (battleShow == null)
-            battleShow = GetComponent<BattleShow>();
-        if (battleShow == null)
-            battleShow = gameObject.AddComponent<BattleShow>();
     }
     private void Start()
     {
         ChangeStep(Battle_Step.SelectAction);
         SelectAction();
-    }
-    private void Update()
-    {
-        // 공격 방향 고르는 중에 클릭하면 공격 확정
-        if (CurrentStep != Battle_Step.SelectAttack)
-            return;
-        if (Mouse.current == null || !Mouse.current.leftButton.wasPressedThisFrame)
-            return;
-
-        Attack_Player();
     }
     private void SelectAction() // 행동 UI 활성화
     {
@@ -59,19 +43,31 @@ public class Battle : MonoBehaviour
             return;
         ShowActionUI();
     }
-    public void Choose_Move()
+    public void ChooseMove()
     {
         HideActionUI();
         ChangeStep(Battle_Step.SelectDirection);
         battlePreview.PlayerMovePreview();
     }
-    public void Choose_Attack()
+    public void ChooseAttack()
     {
         HideActionUI();
         ShowWeaponUI();
         ChangeStep(Battle_Step.SelectWeapon);
     }
-    public void Move_Player(int x, int y) 
+    public void AttackPlayer()
+    {
+        if (CurrentStep != Battle_Step.SelectAttack)
+            return;
+
+        ChangeStep(Battle_Step.TurnEnd);
+
+        battleShow.effectOn(selectWeapon, battlePreview.AttackTiles, battlePreview.AttackDirection);
+
+        battlePreview.CleanPreviewColor();
+    }
+
+    public void MovePlayer(int x, int y) 
     {
         if (CurrentStep != Battle_Step.SelectDirection)
             return;
@@ -97,7 +93,7 @@ public class Battle : MonoBehaviour
 
         MoveAni(player.GetPositionOnTile(worldPosition));
 
-        battlePreview.ClearMovePreview();
+        battlePreview.CleanPreviewColor();
 
     }
     public void MoveAni(Vector3 moveTile)
@@ -115,33 +111,14 @@ public class Battle : MonoBehaviour
         yield return new WaitForSeconds(spriteAnimator.Duration);
 
         spriteAnimator.SetState("Idle", true);
-        Finish_Anim();
+        FinishAnim();
     }
-    public void Attack_Player()
-    {
-        if (CurrentStep != Battle_Step.SelectAttack)
-            return;
-
-        WeaponData weapon = battlePreview.CurrentWeapon;
-        if (weapon == null)
-            return;
-
-        Vector2Int direction = battlePreview.AttackDirection;
-        List<Vector2Int> attackTiles = battlePreview.GetAttackTiles();
-
-        ChangeStep(Battle_Step.TurnEnd); // 연출 중 재클릭 방지
-        battlePreview.ClearMovePreview();
-
-        // TODO: 데미지 처리
-
-        battleShow.AttackAni(weapon.weaponType, direction, attackTiles); // 끝나면 BattleShow가 Finish_Anim() 호출
-    }
-    public void Finish_Anim() // 애니메이션 재생 종료 후 실행
+    public void FinishAnim() // 애니메이션 재생 종료 후 실행
     {
         ChangeStep(Battle_Step.TurnEnd);
-        End_Turn();
+        EndTurn();
     }
-    private void End_Turn() // 배틀 쇼의 애니메이션 종료 후 실행
+    private void EndTurn() // 배틀 쇼의 애니메이션 종료 후 실행
     {
         if (CurrentStep != Battle_Step.TurnEnd)
             return;
@@ -182,6 +159,8 @@ public class Battle : MonoBehaviour
         WeaponData weapon = GetWeapon(0, WeaponType.Sword); // 추후 강화 시스템 나오면 레벨 수정 
         battlePreview.PlayerAttackPreview(weapon);
         
+        selectWeapon = weapon;
+        
         HideWeaponUI();
         ChangeStep(Battle_Step.SelectAttack);
     }
@@ -193,6 +172,8 @@ public class Battle : MonoBehaviour
         WeaponData weapon = GetWeapon(0, WeaponType.Spear); // 추후 강화 시스템 나오면 레벨 수정 
         battlePreview.PlayerAttackPreview(weapon);
 
+        selectWeapon = weapon;
+
         HideWeaponUI();
         ChangeStep(Battle_Step.SelectAttack);
     }
@@ -203,6 +184,8 @@ public class Battle : MonoBehaviour
         WeaponData weapon = GetWeapon(0, WeaponType.Gun);// 추후 강화 시스템 나오면 레벨 수정
         battlePreview.PlayerAttackPreview(weapon);
 
+        selectWeapon = weapon;
+
         HideWeaponUI();
         ChangeStep(Battle_Step.SelectAttack);
     }
@@ -212,6 +195,8 @@ public class Battle : MonoBehaviour
             return;
         WeaponData weapon = GetWeapon(0, WeaponType.Magic);// 추후 강화 시스템 나오면 레벨 수정
         battlePreview.PlayerAttackPreview(weapon);
+
+        selectWeapon = weapon;
 
         HideWeaponUI();
         ChangeStep(Battle_Step.SelectAttack);

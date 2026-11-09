@@ -26,27 +26,10 @@ public class BattlePreview : MonoBehaviour
     private int lastTileX;
     private int lastTileY;
 
-    // 공격 확정 때 Battle이 읽어감: 지금 고른 무기, 마우스 기준 공격 방향(위/아래/오른/왼 한 칸)
-    public WeaponData CurrentWeapon => currentWeapon;
-    public Vector2Int AttackDirection => GetMouseDirection(Vector2Int.up);
-
-    // 지금 빨갛게 칠해지는 공격 범위 칸들 (PlayerAttackPreview와 같은 계산)
-    public List<Vector2Int> GetAttackTiles()
-    {
-        List<Vector2Int> tiles = new List<Vector2Int>();
-        if (currentWeapon == null)
-            return tiles;
-
-        Vector2Int playerTile = new Vector2Int(map.PlayerTileX, map.PlayerTileY);
-        foreach (AttackCell attackCell in currentWeapon.weaponRD)
-        {
-            if (currentWeapon.weaponType == WeaponType.Magic)
-                tiles.Add(new Vector2Int(lastTileX, lastTileY) + GetMouseDirection(attackCell.cell)); // 마법은 마우스 칸 기준
-            else
-                tiles.Add(playerTile + GetMouseDirection(attackCell.cell));
-        }
-        return tiles;
-    }
+    // 공격할 때 Battle이 가져감: 지금 빨갛게 칠한 칸들, 공격 방향
+    private List<Vector2Int> attackTiles = new List<Vector2Int>();
+    public List<Vector2Int> AttackTiles => attackTiles;
+    public Vector2Int AttackDirection => lastDirection;
 
     private void Awake()
     {
@@ -68,6 +51,12 @@ public class BattlePreview : MonoBehaviour
             return;
 
         RefreshAttackPreview();
+        if (Mouse.current.leftButton.wasPressedThisFrame &&
+            battle.CurrentStep == Battle.Battle_Step.SelectAttack)
+        {
+            battle.AttackPlayer();
+            return;
+        }
 
         if (!Mouse.current.leftButton.wasPressedThisFrame ||
             battle.CurrentStep != Battle.Battle_Step.SelectDirection)
@@ -75,7 +64,7 @@ public class BattlePreview : MonoBehaviour
 
         Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
         RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity, tileLayer);
-
+        
         if (hit.collider == null ||
             !map.TryGetTileCoordinate(hit.collider, out int x, out int y))
             return;
@@ -84,7 +73,8 @@ public class BattlePreview : MonoBehaviour
         if (!CanMoveTo(x, y))
             return;
 
-        battle.Move_Player(x, y);
+        battle.MovePlayer(x, y);
+
     }
 
     private Vector2Int Rotate(Vector2Int cell, int direction)
@@ -134,7 +124,8 @@ public class BattlePreview : MonoBehaviour
     {
         currentWeapon = weapon;
 
-        ClearMovePreview();
+        CleanPreviewColor();
+        attackTiles.Clear();
 
         Vector2Int playerTile = new Vector2Int(map.PlayerTileX, map.PlayerTileY);
         
@@ -146,6 +137,7 @@ public class BattlePreview : MonoBehaviour
                 Vector2Int curruentTile = new Vector2Int (lastTileX, lastTileY);
                 Vector2Int getMousePosition = GetMouseDirection(targetTile) + curruentTile;
 
+                attackTiles.Add(getMousePosition);
                 Paint(getMousePosition.x, getMousePosition.y, attackPreviewColor);
             }
         }
@@ -157,12 +149,12 @@ public class BattlePreview : MonoBehaviour
                 Vector2Int targetTile = attackCell.cell;
                 Vector2Int getMouseDirection = playerTile + GetMouseDirection(targetTile);
 
+                attackTiles.Add(getMouseDirection);
                 Paint(getMouseDirection.x, getMouseDirection.y, attackPreviewColor);
             }
         }
     }
 
-    // 마우스가 올라간 칸 갱신
     private void UpdateMouseTile()
     {
         Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
@@ -220,7 +212,7 @@ public class BattlePreview : MonoBehaviour
                tile.Visitable && tile.CanPlayerGo && !tile.OnEnemy;
     }
 
-    public void ClearMovePreview()
+    public void CleanPreviewColor()
     {
         reachableTiles = null;
         ResetPreviewColors();
@@ -289,7 +281,6 @@ public class BattlePreview : MonoBehaviour
         isVisited[playerTile.x, playerTile.y] = false;
         return isVisited;
     }
-
     private void ShowMovePreview(bool[,] moveRange)
     {
         ResetPreviewColors();
