@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 public class Stage_change : MonoBehaviour
 {
     [SerializeField] private Stg stg_num; // 타이틀은 0 스테이지 는 각각 1~4 스테체인지 5 상점 6 7,8 각각 클리어 게임오버 9 대장간
+    public Stg StgInfo => stg_num;
     public enum Stg  // 스테이지 정보
 
     {
@@ -41,7 +42,11 @@ public class Stage_change : MonoBehaviour
         stg_num = Stg.Game_Over;
         change_stg();
     }
-
+    public void ChangeStageTo(Stg destination)
+    {
+        stg_num = destination;
+        ChangeStage();
+    }
 
 
 
