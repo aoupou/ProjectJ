@@ -11,10 +11,12 @@ public class BattleShow : MonoBehaviour
     // 비워두면 Resources/Animations/WeaponEffectCollection 을 자동으로 불러옴
     [SerializeField] private SpriteAnimationCollection weaponEffectCollection;
     // 이펙트 크기 배율 (1 = 공격 범위 크기에 맞춤). 무기마다 따로 조절
-    [SerializeField] private float swordEffectSize = 1f;
-    [SerializeField] private float spearEffectSize = 1f;
-    [SerializeField] private float gunEffectSize = 1f;
-    [SerializeField] private float magicEffectSize = 0.8f;
+    // 공격할 때마다 읽어서, 플레이 중에 바꿔도 다음 공격부터 바로 반영됨
+    [Header("무기 이펙트 크기 배율 (1 = 공격 범위에 딱 맞춤)")]
+    [SerializeField, Range(0.5f, 1.5f)] private float swordEffectSize = 1f;
+    [SerializeField, Range(0.5f, 1.5f)] private float spearEffectSize = 1f;
+    [SerializeField, Range(0.5f, 1.5f)] private float gunEffectSize = 1f;
+    [SerializeField, Range(0.5f, 1.5f)] private float magicEffectSize = 0.8f;
     [SerializeField] private int weaponEffectSortingOrder = 100; // 이펙트 그리는 순서 (클수록 위)
     private SpriteAnimator weaponEffect;
 
