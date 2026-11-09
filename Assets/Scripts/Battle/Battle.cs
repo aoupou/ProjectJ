@@ -1,10 +1,12 @@
-using UnityEngine;
-using UnityEngine.InputSystem;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Battle : MonoBehaviour
 {
+    [SerializeField] private Stage_change stgch;
     [SerializeField] private Transform playerTransform;
     [SerializeField] private SpriteAnimator spriteAnimator; 
     [SerializeField] private Map map;
@@ -14,9 +16,15 @@ public class Battle : MonoBehaviour
     [SerializeField] private BattlePreview battlePreview;
     [SerializeField] private BattleShow battleShow; // 공격 연출 담당 (비워두면 같은 오브젝트에서 찾거나 붙임)
     [SerializeField] private Battle_Step currentStep = Battle_Step.SelectAction;
+    [SerializeField] private TMP_Text PHpTxt;
+    [SerializeField] private TMP_Text EHpTxt;
+    [SerializeField] private int PlayerHp = 10;
+    [SerializeField] private int EnemyHp = 10;
+    private bool isplayerdead = false;
+    private bool isenemydead = false;
 
     public Battle_Step CurrentStep => currentStep;
-    public Map BattleMap => map;                     // BattleShow가 연출 위치 계산에 씀
+    public Map BattleMap => map; // BattleShow가 연출 위치 계산에 씀
     public Transform PlayerTransform => playerTransform;
     public int moverange;
     CharacterData playerRangeData;
@@ -132,9 +140,22 @@ public class Battle : MonoBehaviour
         ChangeStep(Battle_Step.TurnEnd); // 연출 중 재클릭 방지
         battlePreview.ClearMovePreview();
 
-        // TODO: 데미지 처리
+        if (map.HasEnemyTile)
+        {
+            Vector2Int enemyTile = new Vector2Int(map.EnemyTileX, map.EnemyTileY);
 
-        battleShow.AttackAni(weapon.weaponType, direction, attackTiles); // 끝나면 BattleShow가 Finish_Anim() 호출
+            for (int i = 0; i < attackTiles.Count; i++)
+            {
+                if (attackTiles[i] != enemyTile)
+                    continue;
+
+                int damage = weapon.weaponRD[i].damage;
+                SetEnenmyHp(EnemyHp - damage);
+                Debug.Log($"적의 남은 체력: {EnemyHp}");
+                break;
+            }
+        }
+         battleShow.AttackAni(weapon.weaponType, direction, attackTiles); // 끝나면 BattleShow가 Finish_Anim() 호출
     }
     public void Finish_Anim() // 애니메이션 재생 종료 후 실행
     {
@@ -146,6 +167,11 @@ public class Battle : MonoBehaviour
         if (CurrentStep != Battle_Step.TurnEnd)
             return;
 
+        if (isplayerdead && !isenemydead)
+            stgch.ChangeStageTo(Stage_change.Stg.Game_Over);
+        else if (isenemydead)
+            stgch.ChangeStageTo(Stage_change.Stg.stg_CLR);
+        
         ChangeStep(Battle_Step.SelectAction);
         SelectAction();
     }
@@ -238,5 +264,39 @@ public class Battle : MonoBehaviour
         }
         
         return null;
+    }
+    
+    private void ShowPlayerHP()
+    {
+        PHpTxt.text = $"HP = {PlayerHp}";
+    }
+    private void ShowEnemyHP()
+    {
+        EHpTxt.text = $"HP = {EnemyHp}";
+    }
+    private int SetEnenmyHp(int HP)
+    {
+        EnemyHp = HP;
+        if (EnemyHp < 0)
+        {
+            EnemyHp = 0;
+            isenemydead = true;
+        }
+            ShowEnemyHP();
+
+        return EnemyHp;
+        
+    }
+    private int SetPlayerHp(int HP)
+    {
+        PlayerHp = HP;
+        if (PlayerHp < 0)
+        {
+            PlayerHp = 0;
+            isplayerdead = true;
+        }
+        ShowPlayerHP();
+        return PlayerHp;
+        
     }
 }
