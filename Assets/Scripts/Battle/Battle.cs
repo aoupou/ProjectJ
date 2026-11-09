@@ -106,12 +106,12 @@ public class Battle : MonoBehaviour
     }
     private IEnumerator CoroutineMove(Vector3 moveTile)
     {
-        spriteAnimator.SetState("WalkingOn", true);
+        spriteAnimator.SetState("WalkingOff", true);
         yield return new WaitForSeconds(spriteAnimator.Duration);
 
         playerTransform.position = moveTile;
          
-        spriteAnimator.SetState("WalkingOff", true);
+        spriteAnimator.SetState("WalkingOn", true);
         yield return new WaitForSeconds(spriteAnimator.Duration);
 
         spriteAnimator.SetState("Idle", true);

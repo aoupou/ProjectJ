@@ -193,14 +193,14 @@ public class Player : MonoBehaviour
 
         // 마법진 속으로 들어감
         PlaySound(moveInSound);
-        yield return PlayOnce("WalkingOn");
+        yield return PlayOnce("WalkingOff");
 
         // 이동할 칸으로 순간이동
         transform.position = targetPosition;
 
         // 마법진 속에서 나옴
         PlaySound(moveOutSound);
-        yield return PlayOnce("WalkingOff");
+        yield return PlayOnce("WalkingOn");
 
         // 이동 완료 → Idle
         animator.SetState("Idle", true);
