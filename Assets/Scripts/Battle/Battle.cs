@@ -1,8 +1,12 @@
-using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Battle : MonoBehaviour
 {
+    [SerializeField] private Stage_change stgch;
     [SerializeField] private Transform playerTransform;
     [SerializeField] private SpriteAnimator spriteAnimator; 
     [SerializeField] private BattleShow battleShow;
@@ -12,6 +16,12 @@ public class Battle : MonoBehaviour
     [SerializeField] private Transform mapsponerTransform;
     [SerializeField] private BattlePreview battlePreview;
     [SerializeField] private Battle_Step currentStep = Battle_Step.SelectAction;
+    [SerializeField] private TMP_Text PHpTxt;
+    [SerializeField] private TMP_Text EHpTxt;
+    [SerializeField] private int PlayerHp = 10;
+    [SerializeField] private int EnemyHp = 10;
+    private bool isplayerdead = false;
+    private bool isenemydead = false;
 
 
     public WeaponData selectWeapon;
@@ -62,7 +72,25 @@ public class Battle : MonoBehaviour
 
         ChangeStep(Battle_Step.TurnEnd);
 
-        battleShow.effectOn(selectWeapon, battlePreview.AttackTiles, battlePreview.AttackDirection);
+        // 데미지: 빨간 칸 중 적이 있는 칸이면 그 칸 데미지만큼 깎음 (팀원 코드 옮김)
+        List<Vector2Int> attackTiles = battlePreview.AttackTiles;
+        if (map.HasEnemyTile)
+        {
+            Vector2Int enemyTile = new Vector2Int(map.EnemyTileX, map.EnemyTileY);
+
+            for (int i = 0; i < attackTiles.Count; i++)
+            {
+                if (attackTiles[i] != enemyTile)
+                    continue;
+
+                int damage = selectWeapon.weaponRD[i].damage;
+                SetEnenmyHp(EnemyHp - damage);
+                Debug.Log($"적의 남은 체력: {EnemyHp}");
+                break;
+            }
+        }
+
+        battleShow.effectOn(selectWeapon, attackTiles, battlePreview.AttackDirection);
 
         battlePreview.CleanPreviewColor();
     }
@@ -123,6 +151,11 @@ public class Battle : MonoBehaviour
         if (CurrentStep != Battle_Step.TurnEnd)
             return;
 
+        if (isplayerdead && !isenemydead)
+            stgch.ChangeStageTo(Stage_change.Stg.Game_Over);
+        else if (isenemydead)
+            stgch.ChangeStageTo(Stage_change.Stg.stg_CLR);
+        
         ChangeStep(Battle_Step.SelectAction);
         SelectAction();
     }
@@ -223,5 +256,39 @@ public class Battle : MonoBehaviour
         }
         
         return null;
+    }
+    
+    private void ShowPlayerHP()
+    {
+        PHpTxt.text = $"HP = {PlayerHp}";
+    }
+    private void ShowEnemyHP()
+    {
+        EHpTxt.text = $"HP = {EnemyHp}";
+    }
+    private int SetEnenmyHp(int HP)
+    {
+        EnemyHp = HP;
+        if (EnemyHp < 0)
+        {
+            EnemyHp = 0;
+            isenemydead = true;
+        }
+            ShowEnemyHP();
+
+        return EnemyHp;
+        
+    }
+    private int SetPlayerHp(int HP)
+    {
+        PlayerHp = HP;
+        if (PlayerHp < 0)
+        {
+            PlayerHp = 0;
+            isplayerdead = true;
+        }
+        ShowPlayerHP();
+        return PlayerHp;
+        
     }
 }

@@ -7,8 +7,6 @@ public class enemy_movement : MonoBehaviour
     [SerializeField] private Vector2 positionInTile = new Vector2(0.5f, 0.5f);
     [SerializeField] private float ESize;
     [SerializeField] private Player player;
-    [SerializeField, Range(0f, 1f)]
-    private float attackChance = 0.3f;
     private Vector3 playerPosition;
 
     private void Start()
