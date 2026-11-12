@@ -6668,11 +6668,11 @@ MonoBehaviour:
   mapsponerTransform: {fileID: 762981257}
   battlePreview: {fileID: 1731515877}
   currentStep: 0
-  selectWeapon: {fileID: 0}
   PHpTxt: {fileID: 960192850}
   EHpTxt: {fileID: 790504764}
   PlayerHp: 10
   EnemyHp: 10
+  selectWeapon: {fileID: 0}
   moverange: 0
 --- !u!114 &1731515877
 MonoBehaviour:
@@ -6711,6 +6711,10 @@ MonoBehaviour:
   map: {fileID: 241752802}
   WeaponEffect: {fileID: 1900310641}
   Player: {fileID: 838436028}
+  swordSize: 1.4
+  spearSize: 1.6
+  gunSize: 1.2
+  magicSize: 0.3
 --- !u!114 &1731515879
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7530,7 +7534,7 @@ Transform:
   m_GameObject: {fileID: 1900310641}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.65642, y: 1.30116, z: 0}
+  m_LocalPosition: {x: -12.55, y: 1.21, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

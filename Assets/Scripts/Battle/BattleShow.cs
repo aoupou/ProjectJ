@@ -45,23 +45,23 @@ public class BattleShow : MonoBehaviour
 
         WeaponEffect.transform.position = new Vector3(center.x, center.y, WeaponEffect.transform.position.z);
 
-        float distance = 0f;
+        float angle = 0f;
         if (weapon.weaponType != WeaponType.Magic)
         {
             if (direction == Vector2Int.down)
             {
-                distance = 180f;
+                angle = 180f;
             }
             else if (direction == Vector2Int.right)
             {
-                distance = -90f;
+                angle = -90f;
             }
             else if (direction == Vector2Int.left)
             {
-                distance = 90f;
+                angle = 90f;
             }
         }
-        WeaponEffect.transform.rotation = Quaternion.Euler(0f, 0f, distance);
+        WeaponEffect.transform.rotation = Quaternion.Euler(0f, 0f, angle);
 
         float size = GetSize(weapon.weaponType);
         WeaponEffect.transform.localScale = baseScale * size;
@@ -74,8 +74,8 @@ public class BattleShow : MonoBehaviour
         WeaponEffect.gameObject.SetActive(true);
 
         string newWeapon = weapon.weaponType.ToString();
-
         spriteAnimator.SetState(newWeapon, true);
+
         yield return new WaitForSeconds(spriteAnimator.Duration);
 
         WeaponEffect.gameObject.SetActive(false);

@@ -72,8 +72,8 @@ public class Battle : MonoBehaviour
 
         ChangeStep(Battle_Step.TurnEnd);
 
-        // 데미지: 빨간 칸 중 적이 있는 칸이면 그 칸 데미지만큼 깎음 (팀원 코드 옮김)
         List<Vector2Int> attackTiles = battlePreview.AttackTiles;
+        
         if (map.HasEnemyTile)
         {
             Vector2Int enemyTile = new Vector2Int(map.EnemyTileX, map.EnemyTileY);

@@ -183,7 +183,6 @@ public class BattlePreview : MonoBehaviour
         {
             if (lastTileX != previousX || lastTileY != previousY)
                 PlayerAttackPreview(currentWeapon);
-
             return;
         }
 
