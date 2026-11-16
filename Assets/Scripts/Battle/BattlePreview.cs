@@ -30,6 +30,7 @@ public class BattlePreview : MonoBehaviour
     private List<Vector2Int> attackTiles = new List<Vector2Int>();
     public List<Vector2Int> AttackTiles => attackTiles;
     public Vector2Int AttackDirection => lastDirection;
+    public Vector2Int MouseTile => new Vector2Int(lastTileX, lastTileY); // 마법 공격 중심 칸
 
     private void Awake()
     {

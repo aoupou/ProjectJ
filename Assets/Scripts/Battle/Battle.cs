@@ -96,7 +96,7 @@ public class Battle : MonoBehaviour
 
         ChangeStep(Battle_Step.TurnEnd);
 
-        battleShow.effectOn(selectWeapon, attackTiles, battlePreview.AttackDirection);
+        battleShow.effectOn(selectWeapon, attackTiles, battlePreview.AttackDirection, battlePreview.MouseTile);
 
         battlePreview.CleanPreviewColor();
     }

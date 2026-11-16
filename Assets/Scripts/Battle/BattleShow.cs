@@ -23,24 +23,38 @@ public class BattleShow : MonoBehaviour
         baseScale = WeaponEffect.transform.localScale;
     }
 
-    public void effectOn(WeaponData weapon, List<Vector2Int> attackTiles, Vector2Int direction)
+    public void effectOn(WeaponData weapon, List<Vector2Int> attackTiles, Vector2Int direction, Vector2Int mouseTile)
     {
-        Vector3 sum = Vector3.zero;
-        int count = 0;
+        Vector3 center = Player.transform.position;
 
-        foreach (Vector2Int tile in attackTiles)
+        if (weapon.weaponType == WeaponType.Magic)
         {
-            if (map.TryGetTileWorldPosition(tile.x, tile.y, out Vector3 tilePosition))
+            // 마법은 마우스 칸이 중심
+            // 평균을 내면 모서리에서 맵 밖 칸이 빠져서 중심이 안쪽으로 밀림
+            if (map.TryGetTileWorldPosition(mouseTile.x, mouseTile.y, out Vector3 mousePosition))
             {
-                sum += tilePosition;
-                count++;
+                center = mousePosition;
             }
         }
-
-        Vector3 center = Player.transform.position;
-        if (count > 0)
+        else
         {
-            center = sum / count;
+            // 칼, 창, 총은 빨간 칸 위치의 평균
+            Vector3 sum = Vector3.zero;
+            int count = 0;
+
+            foreach (Vector2Int tile in attackTiles)
+            {
+                if (map.TryGetTileWorldPosition(tile.x, tile.y, out Vector3 tilePosition))
+                {
+                    sum += tilePosition;
+                    count++;
+                }
+            }
+
+            if (count > 0)
+            {
+                center = sum / count;
+            }
         }
 
         WeaponEffect.transform.position = new Vector3(center.x, center.y, WeaponEffect.transform.position.z);
