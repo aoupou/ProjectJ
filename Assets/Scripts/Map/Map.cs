@@ -239,14 +239,6 @@ public class Map : MonoBehaviour
         mapData[enemyTileX,enemyTileY].OnEnemy = true;
         hasEnemyTile = true;
         // 적 점유 여부는 OnEnemy로 검사하고 지형의 이동 설정은 유지한다.
-        if (!TryGetEnemyWorldPosition(out Vector3 worldPosition))
-        {
-            Debug.LogError("적 타일의 월드 좌표를 가져오지 못했습니다.");
-            return false;
-        }
-
-        worldPosition += new Vector3(newX, newY, 0f);
-        transform.position = worldPosition;
 
         return true;
     }
