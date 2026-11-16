@@ -67,31 +67,36 @@ public class Battle : MonoBehaviour
         ShowWeaponUI();
         ChangeStep(Battle_Step.SelectWeapon);
     }
+    void ApplyPlayerAttackDamage(List<Vector2Int> attackTiles)
+    {
+
+        Vector2Int enemyTile = new Vector2Int(map.EnemyTileX, map.EnemyTileY);
+
+        for (int i = 0; i < attackTiles.Count; i++)
+        {
+            if (attackTiles[i] != enemyTile)
+                continue;
+
+            int damage = selectWeapon.weaponRD[i].damage;
+            SetEnenmyHp(EnemyHp - damage);
+            break;
+        }
+    }
     public void AttackPlayer()
     {
         if (CurrentStep != Battle_Step.SelectAttack)
             return;
 
         List<Vector2Int> attackTiles = battlePreview.AttackTiles;
+
+        if (map.HasEnemyTile)
+        {
+            StartEnemyAction();
+        }
         
         if (map.HasEnemyTile)
         {
-            Vector2Int enemyTile = new Vector2Int(map.EnemyTileX, map.EnemyTileY);
-
-            for (int i = 0; i < attackTiles.Count; i++)
-            {
-                if (attackTiles[i] != enemyTile)
-                    continue;
-
-                int damage = selectWeapon.weaponRD[i].damage;
-                SetEnenmyHp(EnemyHp - damage);
-                break;
-            }
-        }
-
-        if (map.HasEnemyTile && EnemyHp > 0)
-        {
-            StartEnemyAction();
+            ApplyPlayerAttackDamage(attackTiles);
         }
 
         ChangeStep(Battle_Step.TurnEnd);
@@ -160,7 +165,7 @@ public class Battle : MonoBehaviour
 
         if (!map.TryGetTileWorldPosition(x, y, out Vector3 worldPosition))
         {
-            Debug.LogWarning("월드 포지션 없음");
+            Debug.LogWarning("월드 포지션 없음 ㅅㄱ");
             return;
         }
         if (!map.SetEnemyTile(x, y))

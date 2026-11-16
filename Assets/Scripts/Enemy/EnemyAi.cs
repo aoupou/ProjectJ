@@ -75,12 +75,22 @@ public class EnemyAi : MonoBehaviour
         {
             enemyCanMove = TryMoveEnemy(DistanceMove());
         }
-        if (attackskill == null)
+        if (attackskill == null || !skillHits.TryGetValue(attackskill, out var hit))
             return;
 
-        if (attackskill != null && skillHits.TryGetValue(attackskill, out var hit))
+        int targetX = map.PlayerTileX - enemyX;
+        int targetY = map.PlayerTileY - enemyY;
+
+        foreach (AttackCell attackCell in attackskill.skillRD)
         {
-            battle.AttackEnemy(hit.cell.damage);
+            Vector2Int rotatedCell = Rotate(
+                attackCell.cell.x, attackCell.cell.y, hit.direction);
+
+            if (rotatedCell.x != targetX || rotatedCell.y != targetY)
+                continue;
+
+            battle.AttackEnemy(attackCell.damage);
+            return;
         }
 
     }
