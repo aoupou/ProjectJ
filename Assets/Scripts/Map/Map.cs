@@ -228,7 +228,7 @@ public class Map : MonoBehaviour
 
         return true;
     }
-    private bool SetEnemyTile(int newX, int newY)
+    public bool SetEnemyTile(int newX, int newY)
     {
         if (!IsValidTile(newX, newY)) return false;
         if (hasEnemyTile)
@@ -239,6 +239,14 @@ public class Map : MonoBehaviour
         mapData[enemyTileX,enemyTileY].OnEnemy = true;
         hasEnemyTile = true;
         // 적 점유 여부는 OnEnemy로 검사하고 지형의 이동 설정은 유지한다.
+        if (!TryGetEnemyWorldPosition(out Vector3 worldPosition))
+        {
+            Debug.LogError("적 타일의 월드 좌표를 가져오지 못했습니다.");
+            return false;
+        }
+
+        worldPosition += new Vector3(newX, newY, 0f);
+        transform.position = worldPosition;
 
         return true;
     }
@@ -458,7 +466,7 @@ public class Map : MonoBehaviour
         mapData[x,y].CanPlayerGo = false;
         mapData[x,y].CanEnemyGo = false;
 
-        // 플레이어가 떠나도 새로 지정한 이동 불가 상태를 유지한다.
+        // 플레이어가 이동불가 상태를 바꾸지 못하도록 함
         if (hasPlayerTile && playerTileX == x && playerTileY == y)
             playerTileOriginalCanEnemyGo = false;
     }

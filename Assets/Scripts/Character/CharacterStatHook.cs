@@ -34,7 +34,7 @@ public static class CharacterStatHook
         {
             foreach (character_HP hp in root.GetComponentsInChildren<character_HP>(true))
             {
-                CharacterData data = hp.GetComponent<Player>() != null ? player : enemy;
+                CharacterData data = hp.GetComponent<Player_SAndP>() != null ? player : enemy;
 
                 if (data != null)
                     hp.SetHP(data.hp);

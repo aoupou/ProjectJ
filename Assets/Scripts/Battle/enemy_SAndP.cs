@@ -1,12 +1,12 @@
 using UnityEngine;
 
-public class enemy_movement : MonoBehaviour
+public class enemy_SAndP : MonoBehaviour
 {
     [SerializeField] private Battle battle;
     [SerializeField] private Map map;
     [SerializeField] private Vector2 positionInTile = new Vector2(0.5f, 0.5f);
     [SerializeField] private float ESize;
-    [SerializeField] private Player player;
+    [SerializeField] private Player_SAndP player;
     private Vector3 playerPosition;
 
     private void Start()
@@ -15,7 +15,11 @@ public class enemy_movement : MonoBehaviour
         SetPosition();
 
     }
-
+    public Vector3 GetPositionOnTile(Vector3 tileWorldPosition)
+    {
+        return tileWorldPosition +
+            new Vector3(positionInTile.x, positionInTile.y, 0f);
+    }
 
 
     private void SetPosition()

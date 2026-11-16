@@ -17,10 +17,10 @@ public class Old_Battle : MonoBehaviour
     [SerializeField] private Camera mainCamera; 
     [SerializeField] private int attackDamage = 1; // 임시
     [SerializeField] private WeaponType selectweapon;
-    [SerializeField] private enemy_movement enemy;
+    [SerializeField] private enemy_SAndP enemy;
     private float Pacc = 100, PDodge = 10, Eacc = 100, EDodge = 10; // 임시 순서대로 플레이어 명중, 회피 적 명중, 회피
     public Turn_UI turnUI;
-    private Player playerScript;
+    private Player_SAndP playerScript;
 
     private change_tile_color tileColor;
 
@@ -48,7 +48,7 @@ public class Old_Battle : MonoBehaviour
 
     void Start()
     {
-        playerScript = player.GetComponent<Player>();
+        playerScript = player.GetComponent<Player_SAndP>();
         Start_Turn();
         tileColor = GetComponent<change_tile_color>();
     }
@@ -355,16 +355,16 @@ public class Old_Battle : MonoBehaviour
     }
     private void OnEnable()
     {
-        Player.movingOut += AfterPlayerMove;
+        Player_SAndP.movingOut += AfterPlayerMove;
 
-        Player.moveSellecting += ExecuteAction;
+        Player_SAndP.moveSellecting += ExecuteAction;
     }
 
     private void OnDisable()
     {
-        Player.movingOut -= AfterPlayerMove;
+        Player_SAndP.movingOut -= AfterPlayerMove;
 
-        Player.moveSellecting -= ExecuteAction;
+        Player_SAndP.moveSellecting -= ExecuteAction;
     }
     void AfterPlayerMove()
     { 

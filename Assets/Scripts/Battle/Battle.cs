@@ -8,6 +8,7 @@ public class Battle : MonoBehaviour
 {
     [SerializeField] private Stage_change stgch;
     [SerializeField] private Transform playerTransform;
+    [SerializeField] private Transform enemyTranform;
     [SerializeField] private SpriteAnimator spriteAnimator; 
     [SerializeField] private BattleShow battleShow;
     [SerializeField] private Map map;
@@ -20,6 +21,7 @@ public class Battle : MonoBehaviour
     [SerializeField] private TMP_Text EHpTxt;
     [SerializeField] private int PlayerHp = 10;
     [SerializeField] private int EnemyHp = 10;
+    [SerializeField] private EnemyAi enemyAi;
     private bool isplayerdead = false;
     private bool isenemydead = false;
 
@@ -70,8 +72,6 @@ public class Battle : MonoBehaviour
         if (CurrentStep != Battle_Step.SelectAttack)
             return;
 
-        ChangeStep(Battle_Step.TurnEnd);
-
         List<Vector2Int> attackTiles = battlePreview.AttackTiles;
         
         if (map.HasEnemyTile)
@@ -85,17 +85,23 @@ public class Battle : MonoBehaviour
 
                 int damage = selectWeapon.weaponRD[i].damage;
                 SetEnenmyHp(EnemyHp - damage);
-                Debug.Log($"적의 남은 체력: {EnemyHp}");
                 break;
             }
         }
+
+        if (map.HasEnemyTile && EnemyHp > 0)
+        {
+            StartEnemyAction();
+        }
+
+        ChangeStep(Battle_Step.TurnEnd);
 
         battleShow.effectOn(selectWeapon, attackTiles, battlePreview.AttackDirection);
 
         battlePreview.CleanPreviewColor();
     }
 
-    public void MovePlayer(int x, int y) 
+    public void MovePlayer(int x, int y)  // 플레이어를 x,y로 옮겨주는 코드
     {
         if (CurrentStep != Battle_Step.SelectDirection)
             return;
@@ -104,10 +110,10 @@ public class Battle : MonoBehaviour
         if (!battlePreview.CanMoveTo(x, y))
             return;
 
-        Player player = playerTransform.GetComponent<Player>();
+        Player_SAndP player = playerTransform.GetComponent<Player_SAndP>();
         if (player == null)
         {
-            Debug.LogError("playerTransform에 Player 컴포넌트가 없습니다.");
+            Debug.LogError("playerTransform에 Player_SAndP 컴포넌트 없음.");
             return;
         }
 
@@ -119,7 +125,47 @@ public class Battle : MonoBehaviour
         if (!map.SetPlayerTile(x, y))
             return;
 
+        StartEnemyAction();
+
         MoveAni(player.GetPositionOnTile(worldPosition));
+
+        battlePreview.CleanPreviewColor();
+
+    }
+    public void StartEnemyAction()
+    {
+        ChangeStep(Battle_Step.EnemySellect);
+        enemyAi.Active();
+    }
+    public void MoveEnemy(int x, int y)
+    {
+        if (currentStep != Battle_Step.EnemySellect)
+            return; 
+
+        if (map == null || enemyTranform == null || battlePreview == null)
+            return;
+        if(!map.TryGetTile(x, y, out TileData tile))
+        {
+            Debug.Log("해당 타일 비었음");
+            return;
+        }
+        if (!tile.CanEnemyGo)
+            return;
+        enemy_SAndP enemy = enemyTranform.GetComponent<enemy_SAndP>();
+        if (enemy == null)
+        {
+            Debug.LogError("enemyTransform에 nemy_SAndP 컴포넌트 없음.");
+            return;
+        }
+
+        if (!map.TryGetTileWorldPosition(x, y, out Vector3 worldPosition))
+        {
+            Debug.LogWarning("월드 포지션 없음");
+            return;
+        }
+        if (!map.SetEnemyTile(x, y))
+            return;
+        enemy.transform.position = enemy.GetPositionOnTile(worldPosition);
 
         battlePreview.CleanPreviewColor();
 
@@ -269,7 +315,7 @@ public class Battle : MonoBehaviour
     private int SetEnenmyHp(int HP)
     {
         EnemyHp = HP;
-        if (EnemyHp < 0)
+        if (EnemyHp <= 0)
         {
             EnemyHp = 0;
             isenemydead = true;
@@ -282,7 +328,7 @@ public class Battle : MonoBehaviour
     private int SetPlayerHp(int HP)
     {
         PlayerHp = HP;
-        if (PlayerHp < 0)
+        if (PlayerHp <= 0)
         {
             PlayerHp = 0;
             isplayerdead = true;
@@ -290,5 +336,12 @@ public class Battle : MonoBehaviour
         ShowPlayerHP();
         return PlayerHp;
         
+    }
+    public void AttackEnemy(int damage)
+    {
+        if (CurrentStep != Battle_Step.EnemySellect)
+            return;
+
+        SetPlayerHp(PlayerHp - damage);
     }
 }

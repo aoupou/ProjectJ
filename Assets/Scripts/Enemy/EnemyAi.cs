@@ -6,6 +6,7 @@ public class EnemyAi : MonoBehaviour
     [SerializeField] CharacterData characterData;
     [SerializeField] Map map;
     [SerializeField] GameObject enemy;
+    [SerializeField] Battle battle;
 
     int moveRangePower;
     int aggression;
@@ -24,6 +25,8 @@ public class EnemyAi : MonoBehaviour
     EnemySkillData attackskill;
     List <EnemySkillData> enemySkills;
     List<EnemySkillData> ableEnemySkills = new List<EnemySkillData>();
+    private readonly Dictionary<EnemySkillData, (int direction, AttackCell cell)> skillHits 
+        = new Dictionary<EnemySkillData, (int direction, AttackCell cell)> ();
     private void Start()
     {
         moveRangePower = characterData.moveRange;
@@ -59,11 +62,9 @@ public class EnemyAi : MonoBehaviour
 
             else //aggressionTest == false  //c-3
             {
-                Vector2Int enemyMoveTile = DistanceMove();
-                enemyX = enemyMoveTile.x;
-                enemyY = enemyMoveTile.y;
+                enemyCanMove = TryMoveEnemy(DistanceMove());
 
-                if (enemyCanMove == false)
+                if (!enemyCanMove)
                 {
                     attackskill = AtpTest(ableEnemySkills);
                 }
@@ -72,15 +73,16 @@ public class EnemyAi : MonoBehaviour
 
         else // (ableEnemySkills.Count == 0) //b-2 
         {
-            Vector2Int enemyMoveTile = DistanceMove();
-            enemyX = enemyMoveTile.x;
-            enemyY = enemyMoveTile.y;
-
-            if (enemyCanMove == false)
-            {
-                attackskill = AtpTest(enemySkills);
-            }
+            enemyCanMove = TryMoveEnemy(DistanceMove());
         }
+        if (attackskill == null)
+            return;
+
+        if (attackskill != null && skillHits.TryGetValue(attackskill, out var hit))
+        {
+            battle.AttackEnemy(hit.cell.damage);
+        }
+
     }
 
     public Vector2Int enemyTile() // 나중에 map으로 옮기기? 
@@ -113,22 +115,30 @@ public class EnemyAi : MonoBehaviour
     void FindAbleSkill()
     {
         ableEnemySkills.Clear();
-        foreach (EnemySkillData skillTiles in enemySkills)
+        skillHits.Clear();
+
+        int targetX = playerX - enemyX;
+        int targetY = playerY - enemyY;
+
+        foreach (EnemySkillData skill in enemySkills)
         {
-            for (int i =0; i < 4;  i++)
+            for (int direction = 0; direction < 4; direction++)
             {
-                foreach (AttackCell attackCell in skillTiles.skillRD)
+                foreach (AttackCell attackCell in skill.skillRD)
                 {
-                    Vector2Int outAttackCell = Rotate(attackCell.cell.x, attackCell.cell.y, i);
-                    if (outAttackCell.x == (playerX - enemyX)  && outAttackCell.y == (playerY - enemyY))
-                    {
-                        if (!ableEnemySkills.Contains(skillTiles))
-                        {
-                            ableEnemySkills.Add(skillTiles);
-                            break;
-                        }
-                    }
+                    Vector2Int rotatedCell = Rotate(
+                        attackCell.cell.x, attackCell.cell.y, direction);
+
+                    if (rotatedCell.x != targetX || rotatedCell.y != targetY)
+                        continue;
+
+                    ableEnemySkills.Add(skill);
+                    skillHits[skill] = (direction, attackCell);
+                    break;
                 }
+
+                if (skillHits.ContainsKey(skill))
+                    break;
             }
         }
     }
@@ -214,6 +224,12 @@ public class EnemyAi : MonoBehaviour
             for (int directionsCount = 0; directionsCount < directions.Length; directionsCount++)
             {
                 neighborTile = startTile + directions[directionsCount];
+                
+                if (!map.TryGetTile(neighborTile.x, neighborTile.y, out TileData tile))
+                    continue;
+
+                if (!tile.Visitable || !tile.CanEnemyGo || tile.OnPlayer)
+                    continue;
 
                 if (!isVisited[neighborTile.x, neighborTile.y]
                     && distance1[startTile.x, startTile.y] + 1 <= moveRangePower)
@@ -226,28 +242,28 @@ public class EnemyAi : MonoBehaviour
             }
         }
 
-        List <Vector2Int> distanceSameTile = new List <Vector2Int>();
+        List<Vector2Int> bestTiles = new List<Vector2Int>();
+        int bestDifference = int.MaxValue;
 
-        for (int i=0; i <ableMoveTile.Count; i++)
+        foreach (Vector2Int tile in ableMoveTile)
         {
-            epDistanceX = playerX - ableMoveTile[i].x ;
-            epDistanceY = playerY - ableMoveTile[i].y ;
+            int distanceToPlayer = Mathf.Abs(playerX - tile.x)
+                                 + Mathf.Abs(playerY - tile.y);
+            int difference = Mathf.Abs(distanceToPlayer - distance);
 
-            if (distance == Mathf.Abs(epDistanceX) + Mathf.Abs(epDistanceY))
+            if (difference > bestDifference)
+                continue;
+
+            if (difference < bestDifference)
             {
-                distanceSameTile.Add(ableMoveTile[i]);
+                bestDifference = difference;
+                bestTiles.Clear();
             }
-        }
-        if (distanceSameTile.Count == 0)
-        {
-            enemyCanMove = false;
-            return enemyTile;
-        }
-            
 
-        int randomInt = Random.Range(0, distanceSameTile.Count);
+            bestTiles.Add(tile);
+        }
 
-        return distanceSameTile[randomInt];
+        return bestTiles[Random.Range(0, bestTiles.Count)];
 
         //{
         //    for (int i = 0; i < moveRangePower; i++)
@@ -291,7 +307,7 @@ public class EnemyAi : MonoBehaviour
         int fullAtp = 0;
         int realAtp = 0;
 
-        for ( int i = 0;  i < list.Count;i++)
+        for ( int i = 0;  i < list.Count;i++) 
         {
             fullAtp += list[i].ATP; 
         }
@@ -308,5 +324,20 @@ public class EnemyAi : MonoBehaviour
             }
         }
         return list[0];
+    }
+    private bool TryMoveEnemy(Vector2Int destination)
+    {
+        int startX = map.EnemyTileX;
+        int startY = map.EnemyTileY;
+
+        if (destination.x == enemyX && destination.y == enemyY)
+            return false;
+       
+        battle.MoveEnemy(destination.x, destination.y);
+
+        enemyX = map.EnemyTileX;
+        enemyY = map.EnemyTileY;
+
+        return enemyX != startX || enemyY != startY;
     }
 }

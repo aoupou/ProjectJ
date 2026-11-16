@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using static Battle;
 
-public class Player : MonoBehaviour
+public class Player_SAndP : MonoBehaviour
 {
     public Battle battle;
     public Map map;

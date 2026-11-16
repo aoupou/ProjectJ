@@ -1398,7 +1398,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: edb10bd1f98cf9341a82770bb65ec324, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::enemy_movement
+  m_EditorClassIdentifier: Assembly-CSharp::enemy_SAndP
   battle: {fileID: 1731515876}
   map: {fileID: 241752802}
   positionInTile: {x: 0, y: 0.25}
@@ -1529,6 +1529,7 @@ MonoBehaviour:
   characterData: {fileID: 11400000, guid: 1a9ced4db0f580b40abfc2f333551492, type: 2}
   map: {fileID: 241752802}
   enemy: {fileID: 429796452}
+  battle: {fileID: 1731515876}
 --- !u!114 &429796459
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3521,7 +3522,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46ea1f575888e304d9a071c90a726487, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Player
+  m_EditorClassIdentifier: Assembly-CSharp::Player_SAndP
   battle: {fileID: 0}
   map: {fileID: 241752802}
   positionInTile: {x: 0, y: 0.25}
@@ -6660,6 +6661,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Battle
   stgch: {fileID: 1731515874}
   playerTransform: {fileID: 838436030}
+  enemyTranform: {fileID: 429796455}
+  enemyAi: {fileID: 429796458}
   spriteAnimator: {fileID: 838436035}
   battleShow: {fileID: 1731515878}
   map: {fileID: 241752802}
