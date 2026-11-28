@@ -20,6 +20,12 @@ public class Battle : MonoBehaviour
     [SerializeField] private TMP_Text PHpTxt;
     [SerializeField] private TMP_Text EHpTxt;
     [SerializeField] private int PlayerHp = 10;
+
+    [Header("플레이어 강화 효과")]
+    [SerializeField, Min(0)] private int hpBonusPerUpgrade = 2;
+    [SerializeField, Min(0)] private int moveBonusPerUpgrade = 1;
+
+    public int PlayerMaxHp { get; private set; }
     [SerializeField] private int EnemyHp = 10;
     [SerializeField] private EnemyAi enemyAi;
     private bool isplayerdead = false;
@@ -46,6 +52,10 @@ public class Battle : MonoBehaviour
     }
     private void Start()
     {
+        int healthLevel = GameSession.GetUpgradeLevel(UpgradeType.Health);
+        PlayerMaxHp = PlayerHp + healthLevel * hpBonusPerUpgrade;
+        SetPlayerHp(PlayerMaxHp);
+
         ChangeStep(Battle_Step.SelectAction);
         SelectAction();
     }
@@ -233,14 +243,15 @@ public class Battle : MonoBehaviour
     public int Moverange()
     {
         playerRangeData = CharacterDatabase.Get(CharacterDatabase.PlayerKey);
-        moverange = playerRangeData.moveRange;
+        int moveLevel = GameSession.GetUpgradeLevel(UpgradeType.MoveRange);
+        moverange = playerRangeData.moveRange + moveLevel * moveBonusPerUpgrade;
         return moverange;
     }
     public void ChooseSword()
     {
         if (CurrentStep != Battle_Step.SelectWeapon)
             return;
-        WeaponData weapon = GetWeapon(0, WeaponType.Sword); // 추후 강화 시스템 나오면 레벨 수정 
+        WeaponData weapon = GetWeapon(GameSession.GetUpgradeLevel(UpgradeType.Sword), WeaponType.Sword);
         battlePreview.PlayerAttackPreview(weapon);
         
         selectWeapon = weapon;
@@ -253,7 +264,7 @@ public class Battle : MonoBehaviour
         if (CurrentStep != Battle_Step.SelectWeapon)
             return;
 
-        WeaponData weapon = GetWeapon(0, WeaponType.Spear); // 추후 강화 시스템 나오면 레벨 수정 
+        WeaponData weapon = GetWeapon(GameSession.GetUpgradeLevel(UpgradeType.Spear), WeaponType.Spear);
         battlePreview.PlayerAttackPreview(weapon);
 
         selectWeapon = weapon;
@@ -265,7 +276,7 @@ public class Battle : MonoBehaviour
     {
         if (CurrentStep != Battle_Step.SelectWeapon)
             return;
-        WeaponData weapon = GetWeapon(0, WeaponType.Gun);// 추후 강화 시스템 나오면 레벨 수정
+        WeaponData weapon = GetWeapon(GameSession.GetUpgradeLevel(UpgradeType.Gun), WeaponType.Gun);
         battlePreview.PlayerAttackPreview(weapon);
 
         selectWeapon = weapon;
@@ -277,7 +288,7 @@ public class Battle : MonoBehaviour
     {
         if (CurrentStep != Battle_Step.SelectWeapon)
             return;
-        WeaponData weapon = GetWeapon(0, WeaponType.Magic);// 추후 강화 시스템 나오면 레벨 수정
+        WeaponData weapon = GetWeapon(GameSession.GetUpgradeLevel(UpgradeType.Magic), WeaponType.Magic);
         battlePreview.PlayerAttackPreview(weapon);
 
         selectWeapon = weapon;

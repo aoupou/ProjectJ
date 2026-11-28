@@ -824,6 +824,7 @@ GameObject:
   m_Component:
   - component: {fileID: 254644264}
   - component: {fileID: 254644263}
+  - component: {fileID: 925364771}
   m_Layer: 0
   m_Name: enchantManager
   m_TagString: Untagged
@@ -850,6 +851,54 @@ MonoBehaviour:
   EnchantName: {fileID: 475247863}
   Success: {fileID: 419337613}
   Fail: {fileID: 1483752999}
+  beadsText: {fileID: 595875257}
+  upgrade: {fileID: 925364771}
+--- !u!114 &925364771
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 254644262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11c4080c0c92aa24d87047cddd0f3cc8, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Upgrade
+  swordRules:
+  - costBeads: 20
+    successPercent: 100
+  - costBeads: 35
+    successPercent: 80
+  - costBeads: 50
+    successPercent: 60
+  - costBeads: 80
+    successPercent: 40
+  spearRules:
+  - costBeads: 20
+    successPercent: 100
+  - costBeads: 35
+    successPercent: 80
+  - costBeads: 50
+    successPercent: 60
+  gunRules:
+  - costBeads: 20
+    successPercent: 100
+  - costBeads: 35
+    successPercent: 80
+  magicRules:
+  - costBeads: 20
+    successPercent: 100
+  healthRules:
+  - costBeads: 20
+    successPercent: 100
+  - costBeads: 35
+    successPercent: 80
+  - costBeads: 50
+    successPercent: 60
+  moveRangeRules:
+  - costBeads: 30
+    successPercent: 100
 --- !u!4 &254644264
 Transform:
   m_ObjectHideFlags: 0
@@ -1816,7 +1865,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uAD6C\uC2AC:  999\n"
+  m_text: "\uBE44\uC988: 0"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c326b2c93cbaee24f906c0a102f65ede, type: 2}
   m_sharedMaterial: {fileID: 2510925181297586467, guid: c326b2c93cbaee24f906c0a102f65ede, type: 2}
